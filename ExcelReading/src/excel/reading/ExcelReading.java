@@ -33,7 +33,7 @@ public class ExcelReading {
 		// assuming xlsx file
 		Workbook workbook = null;
 		try {
-			File file = new File("C:\\Users\\SESA452171\\Desktop\\ConvertJson.xlsx");
+			File file = new File("C:\\Users\\SESA452171\\Documents\\ConvertJson.xlsx");
 
 			OPCPackage opcPackage = OPCPackage.open(file);
 			workbook = new XSSFWorkbook(opcPackage);
@@ -49,10 +49,11 @@ public class ExcelReading {
 					SelectedKeyJSONObject selectedKeyJSONObject = new SelectedKeyJSONObject();
 
 					Cell cell1 = row1.getCell(0);
-					selectedKeyJSONObject.selectionKeyName = getCellValue(cell1).toString();
-
 					Cell cell2 = row1.getCell(1);
-					selectedKeyJSONObject.selectionCategory = getCellValue(cell2).toString();
+					selectedKeyJSONObject.selectionKeyName = getCellValue(cell2).toString();
+
+					
+					selectedKeyJSONObject.selectionCategory = getCellValue(cell1).toString();
 
 					Cell cell3 = row1.getCell(2);
 					selectedKeyJSONObject.selectionKeyDescription = getCellValue(cell3).toString();
