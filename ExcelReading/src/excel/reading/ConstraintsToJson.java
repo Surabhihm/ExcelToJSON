@@ -74,13 +74,13 @@ public class ConstraintsToJson {
 				counterRackDetails++;
 			}
 
-			StringBuilder writeUp = new StringBuilder();
+			StringBuilder writeUpRack = new StringBuilder();
 
-			writeUp.append("[");
+			writeUpRack.append("[");
 
 			for (int i = 0; i < rackDetailsList.size(); i++) {
 
-				writeUp.append("{ \"rackId\" :\"").append(rackDetailsList.get(i).rackId).append("\"").append(",")
+				writeUpRack.append("{ \"rackId\" :\"").append(rackDetailsList.get(i).rackId).append("\"").append(",")
 						.append("\"height\" : ").append(rackDetailsList.get(i).height).append(",")
 						.append("\"width\" : ").append(rackDetailsList.get(i).width).append(",")
 						.append("\"depth\" : ").append(rackDetailsList.get(i).depth).append(",")
@@ -90,13 +90,67 @@ public class ConstraintsToJson {
 						.append(",").append("\"Inrow_Module\" : ").append(rackDetailsList.get(i).value.Inrow_Module)
 						.append(",").append("\"Overhead_Module\" : ")
 						.append(rackDetailsList.get(i).value.Overhead_Module);
-				writeUp.append("}},");
+				writeUpRack.append("}},");
 			}
 
-			writeUp.append("]");
+			writeUpRack.append("]");
 
 			mapper.writerWithDefaultPrettyPrinter()
-					.writeValue(new File("C:\\Users\\SESA452171\\Desktop\\constraintsJson.txt"), writeUp.toString());
+					.writeValue(new File("C:\\Users\\SESA452171\\Desktop\\rackDetailsconstraintsJson.txt"), writeUpRack.toString());
+			/*
+			 * rackDetails constraints creation ends here 
+			 */
+			
+			
+			
+			/*
+			 * pduconstraintsJson Constaraints to json
+			 */
+
+			Sheet sheet2 = workbook.getSheet("PDU");
+			List<ModelDetiails> pduModelkDetailsList = new ArrayList<ModelDetiails>();
+
+			int counterPDU = 0;
+			for (Row row1 : sheet2) {
+				if (counterPDU > 0) {
+
+					ModelDetiails pduModelkDetails = new ModelDetiails();
+
+					Cell cell0 = row1.getCell(0);
+					Cell cell1 = row1.getCell(1);
+					Cell cell2 = row1.getCell(2);
+					pduModelkDetails.modelType = getCellValue(cell0).toString();
+					pduModelkDetails.modelNumber = getCellValue(cell1).toString();
+					pduModelkDetails.modelDescription = getCellValue(cell2).toString();
+					pduModelkDetailsList.add(pduModelkDetails);
+
+				}
+				counterPDU++;
+			}
+
+			StringBuilder writeUp = new StringBuilder();
+
+			writeUp.append("{");
+
+			for (int i = 0; i < pduModelkDetailsList.size(); i++) {
+
+				writeUp.append("\"").append(pduModelkDetailsList.get(i).modelType).append("\" : {").
+				append(" \"model\" :\"").append(pduModelkDetailsList.get(i).modelNumber).append("\"").append(",")
+						.append("\"description\" : \"").append(pduModelkDetailsList.get(i).getModelDescription()).append("\"");
+
+				writeUp.append("},");
+			}
+
+			writeUp.append("}");
+
+			mapper.writerWithDefaultPrettyPrinter()
+					.writeValue(new File("C:\\Users\\SESA452171\\Desktop\\pduconstraintsJson.txt"), writeUp.toString());
+			/*
+			 * pduconstraintsJson constraints creation ends here 
+			 */
+			
+			
+			
 		} catch (JsonGenerationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -111,9 +165,11 @@ public class ConstraintsToJson {
 
 	}
 	
-	/*
-	 * rackDetails constraints creation ends here 
-	 */
+
+	
+	
+	
+	
 
 	private static Object getCellValue(Cell cell) {
 		Object cellValue = null;
