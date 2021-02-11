@@ -1,0 +1,23 @@
+[
+    {
+        "NoUPS": {
+            "0": "KW",
+	        "1": "KVA",
+	        "2": "electricalPannel"	              
+        }
+    },
+    {
+        "Rack": {
+            "0": "Brian",
+            "1": "Schultz",
+            "2": "example.com"
+        }
+    },
+    {
+        "NoUPS": {
+            "firstName": "Brian",
+            "lastName": "Schultz",
+            "website": "example.com"
+        }
+    }
+]

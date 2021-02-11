@@ -1,9 +1,12 @@
 package excel.reading;
 
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.openxml4j.opc.OPCPackage;
@@ -18,13 +21,42 @@ import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.Iterator;
+  
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
 public class ConstraintsToJson {
+	
+	private static JSONArray currentJSONKeys;
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
+		getConstraintsKey();
 		readConstraintsExcel();
+		
 	}
 
+	@SuppressWarnings("unchecked")
+	public static void getConstraintsKey(){		
+		try {
+			JSONParser parser = new JSONParser();
+			Object obj = parser.parse(new FileReader("C:\\Users\\SESA547061\\Desktop\\constraintsKey.json"));			
+			currentJSONKeys =  (JSONArray) obj;	
+			System.out.println(currentJSONKeys);				
+			
+		} catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+	}
+
+	@SuppressWarnings("unlikely-arg-type")
 	public static void readConstraintsExcel() {
 		ObjectMapper mapper = new ObjectMapper();
 
@@ -32,11 +64,10 @@ public class ConstraintsToJson {
 		Workbook workbook = null;
 		List<RackDetails> rackDetailsList = new ArrayList<RackDetails>();
 		try {
-			File file = new File("C:\\Users\\SESA452171\\Desktop\\ConstraintsToJSON.xlsx");
+			File file = new File("C:\\Users\\SESA547061\\Desktop\\ConstraintsToJSON.xlsx");
 
 			OPCPackage opcPackage = OPCPackage.open(file);
 			workbook = new XSSFWorkbook(opcPackage);
-
 			/*
 			 * Rack Details Constaraints to json
 			 */
@@ -96,7 +127,7 @@ public class ConstraintsToJson {
 			writeUpRack.append("]");
 
 			mapper.writerWithDefaultPrettyPrinter()
-					.writeValue(new File("C:\\Users\\SESA452171\\Desktop\\rackDetailsconstraintsJson.txt"), writeUpRack.toString());
+					.writeValue(new File("C:\\Users\\SESA547061\\Desktop\\rackDetailsconstraintsJson.txt"), writeUpRack.toString());
 			/*
 			 * rackDetails constraints creation ends here 
 			 */
@@ -144,9 +175,63 @@ public class ConstraintsToJson {
 			writeUp.append("}");
 
 			mapper.writerWithDefaultPrettyPrinter()
-					.writeValue(new File("C:\\Users\\SESA452171\\Desktop\\pduconstraintsJson.txt"), writeUp.toString());
+					.writeValue(new File("C:\\Users\\SESA547061\\Desktop\\pduconstraintsJson.txt"), writeUp.toString());
 			/*
 			 * pduconstraintsJson constraints creation ends here 
+			 */
+			
+			
+			/*
+			 * noupsconstraintsJson Constaraints to json
+			 */
+            for(int sheetNum = 0; sheetNum < workbook.getNumberOfSheets(); sheetNum++) {
+            	if(workbook.getSheetName(sheetNum).toString().toLowerCase().equals("NoUPS".toLowerCase())) {
+					Sheet sheet3 = workbook.getSheetAt(sheetNum);						
+					List<Map<Integer, String>> modelDetailsList = new ArrayList<Map<Integer, String>>();			
+					
+					for(int rowNumber = 0; rowNumber < sheet3.getLastRowNum(); rowNumber++) {
+					    Row row = sheet3.getRow(rowNumber);
+					    Map<Integer, String> modelDetails = new HashMap<Integer, String>();			    
+					    for(int columnNumber = 0; columnNumber < row.getLastCellNum(); columnNumber++) {
+					        Cell cell = row.getCell(columnNumber);			        
+					        if(cell == null || getCellValue(cell) == null) {
+					        	modelDetails.put(columnNumber, Integer.toString(0));
+					        }
+					        else {
+					        	modelDetails.put(columnNumber, getCellValue(cell).toString());
+					        }			        
+					    }
+					    modelDetailsList.add(modelDetails);
+					}
+		
+					StringBuilder writeUpData = new StringBuilder();			
+					writeUpData.append("[");
+					for (int i = 1; i < modelDetailsList.size(); i++) {		
+						Map<Integer, String> modelDetails = modelDetailsList.get(i);
+									
+						writeUpData.append("{");
+						for(int j=0; j < modelDetails.size(); j++) {	
+							writeUpData.append("\"");
+							writeUpData.append(modelDetailsList.get(0).get(j));
+							writeUpData.append("\" :\"");
+							writeUpData.append(modelDetailsList.get(i).get(j));
+							writeUpData.append("\",");					
+						}
+						
+						writeUpData.append("},");				
+					}			
+		
+					writeUpData.append("]");
+					
+					String targetFile = "C:\\\\Users\\\\SESA547061\\\\Desktop\\\\" + workbook.getSheetName(sheetNum) + "ConstraintsJson.txt";
+		
+					mapper.writerWithDefaultPrettyPrinter()
+							.writeValue(new File(targetFile), writeUpData.toString());
+					
+		            }
+            }
+			/*
+			 * noupsconstraintsJson constraints creation ends here 
 			 */
 			
 			
