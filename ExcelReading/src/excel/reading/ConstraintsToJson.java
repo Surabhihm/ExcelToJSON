@@ -68,7 +68,7 @@ public class ConstraintsToJson {
 
 			for (int sheetNum = 0; sheetNum < workbook.getNumberOfSheets(); sheetNum++) {
 				String writeUpData = null;
-				String targetFile = "C:\\\\Users\\\\SESA547061\\\\Desktop\\\\" + workbook.getSheetName(sheetNum)
+				String targetFile = "C:\\Users\\SESA547061\\Desktop\\" + workbook.getSheetName(sheetNum)
 						+ "ConstraintsJson.txt";
 				switch (workbook.getSheetName(sheetNum)) {
 				case "NoUPS":
