@@ -1,23 +1,24 @@
-[
-    {
-        "NoUPS": {
-            "0": "KW",
-	        "1": "KVA",
-	        "2": "electricalPannel"	              
-        }
-    },
-    {
-        "Rack": {
-            "0": "Brian",
-            "1": "Schultz",
-            "2": "example.com"
-        }
-    },
-    {
-        "NoUPS": {
-            "firstName": "Brian",
-            "lastName": "Schultz",
-            "website": "example.com"
-        }
-    }
-]
+{
+	"NoUPS": {
+		"0": "KW",
+		"1": "KVA",
+		"2": "electricalPannel"
+	},
+	"SingleModule": {
+		"0": "coolingType",
+		"1": "coolingModel",
+		"2": "Id",
+		"3": "key",
+		"4": "width",
+		"5": "pwr"
+	},
+	"DualModule": {
+		"0": "coolingType",
+		"1": "Id",
+		"2": "key",
+		"3": "width",
+		"4": "pwr"
+	}
+}
+    
+       
