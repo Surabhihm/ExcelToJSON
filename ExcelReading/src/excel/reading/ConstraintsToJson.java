@@ -18,6 +18,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import com.fasterxml.jackson.core.JsonGenerationException;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -86,7 +87,7 @@ public class ConstraintsToJson {
 				case "PDU":
 					writeUpData = readPDUConstraintsExcel(workbook, sheetNum);
 					mapper.writerWithDefaultPrettyPrinter().writeValue(new File(targetFile), writeUpData.toString());
-					break;				
+					break;
 				default:
 					break;
 				}
@@ -146,42 +147,36 @@ public class ConstraintsToJson {
 
 	public static String readNoUPSConstraintsExcel(Workbook workbook, int sheetNum) {
 		Sheet sheet = workbook.getSheetAt(sheetNum);
-		List<Map<Integer, String>> modelDetailsList = new ArrayList<Map<Integer, String>>();
-		Object mappingKeys = currentJSONKeys.get(workbook.getSheetName(sheetNum));
+		ArrayList<HashMap<String, String>> modelDetailsList = new ArrayList<HashMap<String, String>>();
+		JSONObject mappingKeys = (JSONObject) currentJSONKeys.get(workbook.getSheetName(sheetNum));
 		System.out.println(mappingKeys);
 
-		for (int rowNumber = 0; rowNumber < sheet.getLastRowNum(); rowNumber++) {
+		for (int rowNumber = 1; rowNumber < sheet.getLastRowNum(); rowNumber++) {
 			Row row = sheet.getRow(rowNumber);
-			Map<Integer, String> modelDetails = new HashMap<Integer, String>();
+			HashMap<String, String> modelDetails = new HashMap<String, String>();
 			for (int columnNumber = 0; columnNumber < row.getLastCellNum(); columnNumber++) {
 				Cell cell = row.getCell(columnNumber);
-				if (cell == null || getCellValue(cell) == null) {
-					modelDetails.put(columnNumber, Integer.toString(0));
+				if (cell == null || getCellValue(cell) == null || getCellValue(cell).toString().isEmpty()) {
+					modelDetails.put(mappingKeys.get(Integer.toString(columnNumber)).toString(), Integer.toString(0));
 				} else {
-					modelDetails.put(columnNumber, getCellValue(cell).toString());
+					modelDetails.put(mappingKeys.get(Integer.toString(columnNumber)).toString(),
+							getCellValue(cell).toString());
 				}
 			}
 			modelDetailsList.add(modelDetails);
 		}
 
-		StringBuilder writeUpData = new StringBuilder();
-		writeUpData.append("[{");
-		for (int i = 1; i < modelDetailsList.size(); i++) {
-			Map<Integer, String> modelDetails = modelDetailsList.get(i);
-
-			writeUpData.append("{");
-			for (int j = 0; j < modelDetails.size(); j++) {
-				writeUpData.append("\"");
-				writeUpData.append(modelDetailsList.get(0).get(j));
-				writeUpData.append("\" :\"");
-				writeUpData.append(modelDetailsList.get(i).get(j));
-				writeUpData.append("\",");
-			}
-
-			writeUpData.append("},");
+		ObjectMapper objectMapper = new ObjectMapper();
+		String finalJsonString;
+		try {
+			finalJsonString = objectMapper.writeValueAsString(modelDetailsList);
+			System.out.println(finalJsonString);
+			return finalJsonString;
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		writeUpData.append("]");
-		return writeUpData.toString();
+		return "";
 	}
 
 	public static String readRackConstraintsExcel(Workbook workbook, int sheetNum) {
