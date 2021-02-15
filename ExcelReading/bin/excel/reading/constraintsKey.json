@@ -18,6 +18,19 @@
 		"2": "key",
 		"3": "width",
 		"4": "pwr"
+	},
+	"UPS": {
+		"0": "family",
+		"1": "sku",
+		"2": "electricalPannel",
+		"3": "width",
+		"4": "depth",
+		"5": "batteryModules",
+		"6": "runtime",
+		"7": "KVA",
+		"8": "pwrFactor",
+		"9": "familyForReport",
+		"10": "upsDescription"
 	}
 }
     

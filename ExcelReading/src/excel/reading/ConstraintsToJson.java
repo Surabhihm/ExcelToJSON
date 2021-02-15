@@ -88,6 +88,10 @@ public class ConstraintsToJson {
 					writeUpData = readPDUConstraintsExcel(workbook, sheetNum);
 					mapper.writerWithDefaultPrettyPrinter().writeValue(new File(targetFile), writeUpData.toString());
 					break;
+				case "UPS":
+					writeUpData = readUPSDetailsConstraintsExcel(workbook, sheetNum);
+					mapper.writerWithDefaultPrettyPrinter().writeValue(new File(targetFile), writeUpData.toString());
+					break;
 				default:
 					break;
 				}
@@ -311,6 +315,60 @@ public class ConstraintsToJson {
 
 		return writeUp.toString();
 
+	}
+	
+	public static String readUPSDetailsConstraintsExcel(Workbook workbook, int sheetNum) {
+		Sheet sheet = workbook.getSheetAt(sheetNum);
+		ArrayList<HashMap<String, String>> modelDetailsList = new ArrayList<HashMap<String, String>>();
+		JSONObject mappingKeys = (JSONObject) currentJSONKeys.get(workbook.getSheetName(sheetNum));
+		System.out.println(mappingKeys);
+		boolean IsResetRow = true;
+		for (int rowNumber = 0; rowNumber < sheet.getLastRowNum(); rowNumber++) {
+			Row row = sheet.getRow(rowNumber);	
+			if(row.getCell(0).toString().equals("GALAXY VS/VM")) {
+				break;
+			}
+			if(row.getCell(0).toString().equals("SYMMETRA")) {
+				IsResetRow = true;
+				continue;
+			}
+			
+			for (int columnNumber = 0; columnNumber < row.getLastCellNum(); columnNumber++) {
+				Cell cell = row.getCell(columnNumber);
+				if(IsResetRow) {
+					HashMap<String, String> modelDetails = new HashMap<String, String>();
+					if (cell == null || getCellValue(cell) == null || getCellValue(cell).toString().isEmpty()) {
+						modelDetails.put(Integer.toString(rowNumber), Integer.toString(0));
+					} else {
+						modelDetails.put(Integer.toString(rowNumber),
+								getCellValue(cell).toString());
+					}
+					modelDetailsList.add(modelDetails);					
+				}
+				else {
+					if (cell == null || getCellValue(cell) == null || getCellValue(cell).toString().isEmpty()) {
+						modelDetailsList.get(columnNumber).put(Integer.toString(rowNumber), Integer.toString(0));
+					} else {
+						modelDetailsList.get(columnNumber).put(Integer.toString(rowNumber),
+								getCellValue(cell).toString());
+					}
+				}			
+			}
+			IsResetRow = false;
+			
+		}
+
+		ObjectMapper objectMapper = new ObjectMapper();
+		String finalJsonString;
+		try {
+			finalJsonString = objectMapper.writeValueAsString(modelDetailsList);
+			System.out.println(finalJsonString);
+			return finalJsonString;
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return "";
 	}
 
 }
