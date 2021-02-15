@@ -16,39 +16,34 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.Iterator;
-
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-
 public class ConstraintsToJson {
 
 	private static JSONObject currentJSONKeys;
+	private static String filePath = new File("").getAbsolutePath();
 
 	public static void main(String[] args) {
+		
+		ConstraintsToJson ConstraintsToJson = new ConstraintsToJson();
 		// TODO Auto-generated method stub
-		getConstraintsKey();
-		readConstraintsExcel();
+		ConstraintsToJson.getConstraintsKey();
+		ConstraintsToJson.readConstraintsExcel();
 
 	}
 
 	@SuppressWarnings("unchecked")
-	public static void getConstraintsKey() {
+	public  void getConstraintsKey() {
 		try {
 			JSONParser parser = new JSONParser();
 			currentJSONKeys = (JSONObject) parser
-					.parse(new FileReader("C:\\Users\\SESA547061\\Desktop\\constraintsKey.json"));
+					.parse(new FileReader(filePath + "\\inputResources\\constraintsKey.json"));
 			System.out.println(currentJSONKeys);
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -56,20 +51,20 @@ public class ConstraintsToJson {
 
 	}
 
-	@SuppressWarnings("unlikely-arg-type")
-	public static void readConstraintsExcel() {
+	public void readConstraintsExcel() {
 		ObjectMapper mapper = new ObjectMapper();
 		// assuming xlsx file
 		Workbook workbook = null;
 
 		try {
-			File file = new File("C:\\Users\\SESA547061\\Desktop\\ConstraintsToJSON.xlsx");
+			
+			File file = new File(filePath + "\\inputResources\\ConstraintsToJSON.xlsx");
 			OPCPackage opcPackage = OPCPackage.open(file);
 			workbook = new XSSFWorkbook(opcPackage);
 
 			for (int sheetNum = 0; sheetNum < workbook.getNumberOfSheets(); sheetNum++) {
 				String writeUpData = null;
-				String targetFile = "C:\\Users\\SESA547061\\Desktop\\" + workbook.getSheetName(sheetNum)
+				String targetFile = filePath + "\\outputResources\\" + workbook.getSheetName(sheetNum)
 						+ "ConstraintsJson.txt";
 				switch (workbook.getSheetName(sheetNum)) {
 				case "NoUPS":

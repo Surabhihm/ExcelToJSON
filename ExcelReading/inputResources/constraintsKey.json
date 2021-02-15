@@ -1,0 +1,37 @@
+{
+	"NoUPS": {
+		"0": "KW",
+		"1": "KVA",
+		"2": "electricalPannel"
+	},
+	"SingleModule": {
+		"0": "coolingType",
+		"1": "coolingModel",
+		"2": "Id",
+		"3": "key",
+		"4": "width",
+		"5": "pwr"
+	},
+	"DualModule": {
+		"0": "coolingType",
+		"1": "Id",
+		"2": "key",
+		"3": "width",
+		"4": "pwr"
+	},
+	"UPS": {
+		"0": "family",
+		"1": "sku",
+		"2": "electricalPannel",
+		"3": "width",
+		"4": "depth",
+		"5": "batteryModules",
+		"6": "runtime",
+		"7": "KVA",
+		"8": "pwrFactor",
+		"9": "familyForReport",
+		"10": "upsDescription"
+	}
+}
+    
+       
