@@ -7,6 +7,20 @@ public class StructureDetails {
 	String bayType;
 	int value;
 	int  structureValue;
+	String structureType;
+	int itLoad;
+	public int getItLoad() {
+		return itLoad;
+	}
+	public void setItLoad(int itLoad) {
+		this.itLoad = itLoad;
+	}
+	public String getStructureType() {
+		return structureType;
+	}
+	public void setStructureType(String structureType) {
+		this.structureType = structureType;
+	}
 	int dehumidifier;
 	int minimumServiceLength;
 	int electricalPanel;

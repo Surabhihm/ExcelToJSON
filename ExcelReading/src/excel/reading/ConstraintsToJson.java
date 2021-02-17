@@ -5,6 +5,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -30,7 +31,7 @@ public class ConstraintsToJson {
 	private static String filePath = new File("").getAbsolutePath();
 
 	public static void main(String[] args) {
-		
+
 		ConstraintsToJson ConstraintsToJson = new ConstraintsToJson();
 		// TODO Auto-generated method stub
 		ConstraintsToJson.getConstraintsKey();
@@ -39,7 +40,7 @@ public class ConstraintsToJson {
 	}
 
 	@SuppressWarnings("unchecked")
-	public  void getConstraintsKey() {
+	public void getConstraintsKey() {
 		try {
 			JSONParser parser = new JSONParser();
 			currentJSONKeys = (JSONObject) parser
@@ -57,7 +58,7 @@ public class ConstraintsToJson {
 		Workbook workbook = null;
 
 		try {
-			
+
 			File file = new File(filePath + "\\inputResources\\ConstraintsToJSON.xlsx");
 			OPCPackage opcPackage = OPCPackage.open(file);
 			workbook = new XSSFWorkbook(opcPackage);
@@ -87,6 +88,11 @@ public class ConstraintsToJson {
 					writeUpData = readUPSDetailsConstraintsExcel(workbook, sheetNum);
 					mapper.writerWithDefaultPrettyPrinter().writeValue(new File(targetFile), writeUpData.toString());
 					break;
+				case "ContainerUPS":
+					writeUpData = readContainerUPSConstraintsExcel(workbook, sheetNum);
+					mapper.writerWithDefaultPrettyPrinter().writeValue(new File(targetFile), writeUpData.toString());
+					break;
+
 				default:
 					break;
 				}
@@ -102,6 +108,166 @@ public class ConstraintsToJson {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+
+	}
+
+	private String readContainerUPSConstraintsExcel(Workbook workbook, int sheetNum) {
+		// TODO Auto-generated method stub
+		Sheet sheet = workbook.getSheetAt(sheetNum);
+		Map<String, List<CoolingStructureMap>> uPSCoolingStructureMap = new HashMap<String, List<CoolingStructureMap>>();
+		List<String> coolingTypesList = new ArrayList<String>();
+		for (Row row : sheet) {
+
+			if (row.getCell(0) != null && !getCellValue(row.getCell(0)).toString().equals("")
+					&& (!getCellValue(row.getCell(0)).toString().contains("ISO"))) {
+				String coolingType = getCellValue(row.getCell(1)).toString();
+				String coolingID = getCellValue(row.getCell(0)).toString();
+				Double coolinglength = 0.0;
+				String CoolingTypeValue = "";
+
+				if (coolingType.contains("INROW") && coolingType.contains("CW")) {
+					coolinglength = Double.valueOf(getCellValue(row.getCell(3)).toString());
+					CoolingTypeValue = "Inrow CW " + coolinglength + "mm-" + coolingID;
+				} else if (coolingType.contains("INROW") && coolingType.contains("DX")) {
+					coolinglength = Double.valueOf(getCellValue(row.getCell(3)).toString());
+					CoolingTypeValue = "Inrow DX " + coolinglength + "mm-" + coolingID;
+				} else if (coolingType.contains("CRAC") && coolingType.contains("DX")) {
+					CoolingTypeValue = "CRAC DX " + coolingID;
+				} else if (coolingType.contains("CRAC") && coolingType.contains("CW")) {
+					CoolingTypeValue = "CRAC CW " + coolingID;
+				} else if (coolingType.contains("CRAH") && coolingType.contains("CW")) {
+					CoolingTypeValue = "CRAH CW-" + coolingID;
+				} else if (coolingType.contains("CRAH") && coolingType.contains("DX")) {
+					CoolingTypeValue = "CRAH DX-" + coolingID;
+				} else if (coolingType.contains("WALLMOUNT")) {
+					CoolingTypeValue = "Wall Mounted Down Flow" + coolingID;
+				} else if (coolingType.contains("UNISPLIT")) {
+					CoolingTypeValue = "Unisplit DX " + coolingID;
+				}
+
+				if (!CoolingTypeValue.equals("")) {
+					coolingTypesList.add(new String(CoolingTypeValue));
+				}
+
+			}
+
+			else if (row.getCell(0) != null && !getCellValue(row.getCell(0)).toString().equals("")
+					&& (getCellValue(row.getCell(0)).toString().contains("ISO"))) {
+				String LayoutRedundancy = getCellValue(row.getCell(1)).toString() + " "
+						+ getCellValue(row.getCell(2)).toString();
+				// UPSCoolingStructureMap uPSCoolingStructureMap = new UPSCoolingStructureMap();
+				List<CoolingStructureMap> CoolingStructureMapList = new ArrayList<CoolingStructureMap>();
+
+				for (int j = 0; j < coolingTypesList.size(); j++) {
+					CoolingStructureMap coolingStructureMap = new CoolingStructureMap();
+					String coolType = coolingTypesList.get(j);
+
+					coolingStructureMap.coolingType = coolingTypesList.get(j);
+					List<StructureDetails> StructureDetailsList = new ArrayList<StructureDetails>();
+					coolingStructureMap.setStructureDetailsList(StructureDetailsList);
+					CoolingStructureMapList.add(coolingStructureMap);
+				}
+
+				if (uPSCoolingStructureMap.get(LayoutRedundancy) == null) {
+					uPSCoolingStructureMap.put(LayoutRedundancy, CoolingStructureMapList);
+				}
+
+				List<CoolingStructureMap> coolingStructureMapListActual = uPSCoolingStructureMap.get(LayoutRedundancy);
+				int cellNumber = 4;
+
+				// System.out.print("size" + size);
+
+				for (int j = 0; j < coolingStructureMapListActual.size(); j++) {
+					CoolingStructureMap CoolingStructureMap = coolingStructureMapListActual.get(j);
+
+					List<StructureDetails> StructureDetailsList = CoolingStructureMap.getStructureDetailsList();
+					StructureDetails structureDetails = new StructureDetails();
+
+					// Common hardcoded values go here..
+					structureDetails.setStructureValue(0);
+					structureDetails.setItLoad(0);
+					structureDetails.setMinimumServiceLength(0);
+					structureDetails.setElectricalPanel(0);
+					structureDetails.setValue(0);
+
+					if (StructureDetailsList.size() >= 4) // means dual bay
+					{
+						structureDetails.setLength(Double.valueOf(getCellValue(row.getCell(cellNumber++)).toString()));
+						structureDetails.setType(getCellValue(row.getCell(0)).toString());
+						structureDetails.setBayType("dual");
+
+					} else {
+						if (!CoolingStructureMap.coolingType.contains("CRA")) {
+							structureDetails
+									.setLength(Double.valueOf(getCellValue(row.getCell(cellNumber++)).toString()));
+							structureDetails.setType(getCellValue(row.getCell(0)).toString());
+							structureDetails.setBayType("Single");
+
+						} else {
+
+							structureDetails.setBayType("Single");
+							structureDetails.setLength(0);
+							structureDetails.setType(getCellValue(row.getCell(0)).toString());
+						}
+					}
+					if (structureDetails.getType().contains("NON")) {
+						structureDetails.setStructureType("Module");
+					} else {
+						structureDetails.setStructureType("Container");
+					}
+					StructureDetailsList.add(structureDetails);
+					CoolingStructureMap.setStructureDetailsList(StructureDetailsList);
+
+				}
+			}
+
+		}
+		System.out.println("final" + uPSCoolingStructureMap);
+		StringBuilder writeUpRack = new StringBuilder();
+
+		writeUpRack.append("[");
+		Iterator<Map.Entry<String, List<CoolingStructureMap>>> iterator = uPSCoolingStructureMap.entrySet().iterator();
+		while (iterator.hasNext()) {
+			Map.Entry<String, List<CoolingStructureMap>> entry = iterator.next();
+			System.out.println(entry.getKey() + ":" + entry.getValue());
+
+			writeUpRack.append("{ \"upsFamilyRedundancy\" :\"").append(entry.getKey()).append("\"").append(",")
+					.append("\"cooling\" : [");
+
+			List<CoolingStructureMap> coolonMapList = entry.getValue();
+			for (int k = 0; k < coolonMapList.size(); k++) {
+				CoolingStructureMap coolingStructureMap = coolonMapList.get(k);
+				String coolingType = coolingStructureMap.getCoolingType();
+				writeUpRack.append("{ \"coolingType\" :\"").append(coolingType).append("\",")
+						.append("\"StructureDetails \" : [");
+
+				for (int m = 0; m < coolingStructureMap.getStructureDetailsList().size(); m++)
+
+				{
+					writeUpRack.append("{");
+					StructureDetails structureDetails = coolingStructureMap.getStructureDetailsList().get(m);
+					writeUpRack.append(" \"type\" : \"").append(structureDetails.getType()).append("\" ,")
+							.append(" \"length\" : \"").append(structureDetails.getLength()).append("\" ,")
+							.append(" \"bayType\" : \"").append(structureDetails.getBayType()).append("\" ,")
+							.append(" \"value\" : \"").append(structureDetails.getValue()).append("\" ,")
+							.append(" \"structureType\" : \"").append(structureDetails.getStructureType())
+							.append("\" ,").append(" \"structureValue\" : \"")
+							.append(structureDetails.getStructureValue()).append("\" ,")
+							.append(" \"dehumidifier\" : \"").append(structureDetails.getDehumidifier()).append("\" ,")
+							.append(" \"minimumServiceLength\" : \"").append(structureDetails.getMinimumServiceLength())
+							.append("\" ,").append(" \"electricalPanel\" : \"")
+							.append(structureDetails.getElectricalPanel()).append("\" },");
+
+				}
+				writeUpRack.append("]},");
+
+			}
+			writeUpRack.append("]},");
+		}
+
+		writeUpRack.append("]");
+
+		return writeUpRack.toString();
 
 	}
 
@@ -311,7 +477,7 @@ public class ConstraintsToJson {
 		return writeUp.toString();
 
 	}
-	
+
 	public static String readUPSDetailsConstraintsExcel(Workbook workbook, int sheetNum) {
 		Sheet sheet = workbook.getSheetAt(sheetNum);
 		ArrayList<HashMap<String, String>> modelDetailsList = new ArrayList<HashMap<String, String>>();
@@ -319,38 +485,36 @@ public class ConstraintsToJson {
 		System.out.println(mappingKeys);
 		boolean IsResetRow = true;
 		for (int rowNumber = 0; rowNumber < sheet.getLastRowNum(); rowNumber++) {
-			Row row = sheet.getRow(rowNumber);	
-			if(row.getCell(0).toString().equals("GALAXY VS/VM")) {
+			Row row = sheet.getRow(rowNumber);
+			if (row.getCell(0).toString().equals("GALAXY VS/VM")) {
 				break;
 			}
-			if(row.getCell(0).toString().equals("SYMMETRA")) {
+			if (row.getCell(0).toString().equals("SYMMETRA")) {
 				IsResetRow = true;
 				continue;
 			}
-			
+
 			for (int columnNumber = 0; columnNumber < row.getLastCellNum(); columnNumber++) {
 				Cell cell = row.getCell(columnNumber);
-				if(IsResetRow) {
+				if (IsResetRow) {
 					HashMap<String, String> modelDetails = new HashMap<String, String>();
 					if (cell == null || getCellValue(cell) == null || getCellValue(cell).toString().isEmpty()) {
 						modelDetails.put(Integer.toString(rowNumber), Integer.toString(0));
 					} else {
-						modelDetails.put(Integer.toString(rowNumber),
-								getCellValue(cell).toString());
+						modelDetails.put(Integer.toString(rowNumber), getCellValue(cell).toString());
 					}
-					modelDetailsList.add(modelDetails);					
-				}
-				else {
+					modelDetailsList.add(modelDetails);
+				} else {
 					if (cell == null || getCellValue(cell) == null || getCellValue(cell).toString().isEmpty()) {
 						modelDetailsList.get(columnNumber).put(Integer.toString(rowNumber), Integer.toString(0));
 					} else {
 						modelDetailsList.get(columnNumber).put(Integer.toString(rowNumber),
 								getCellValue(cell).toString());
 					}
-				}			
+				}
 			}
 			IsResetRow = false;
-			
+
 		}
 
 		ObjectMapper objectMapper = new ObjectMapper();
