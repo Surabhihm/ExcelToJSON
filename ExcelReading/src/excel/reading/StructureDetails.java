@@ -5,14 +5,14 @@ public class StructureDetails {
 	String type;
 	double length;
 	String bayType;
-	int value;
-	int  structureValue;
+	double value;
+	double  structureValue;
 	String structureType;
-	int itLoad;
-	public int getItLoad() {
+	double itLoad;
+	public double getItLoad() {
 		return itLoad;
 	}
-	public void setItLoad(int itLoad) {
+	public void setItLoad(double itLoad) {
 		this.itLoad = itLoad;
 	}
 	public String getStructureType() {
@@ -21,9 +21,9 @@ public class StructureDetails {
 	public void setStructureType(String structureType) {
 		this.structureType = structureType;
 	}
-	int dehumidifier;
-	int minimumServiceLength;
-	int electricalPanel;
+	double dehumidifier;
+	double minimumServiceLength;
+	double electricalPanel;
 	
 	public String getType() {
 		return type;
@@ -43,34 +43,34 @@ public class StructureDetails {
 	public void setBayType(String bayType) {
 		this.bayType = bayType;
 	}
-	public int getValue() {
+	public double getValue() {
 		return value;
 	}
-	public void setValue(int value) {
+	public void setValue(double value) {
 		this.value = value;
 	}
-	public int getStructureValue() {
+	public double getStructureValue() {
 		return structureValue;
 	}
-	public void setStructureValue(int structureValue) {
+	public void setStructureValue(double structureValue) {
 		this.structureValue = structureValue;
 	}
-	public int getDehumidifier() {
+	public double getDehumidifier() {
 		return dehumidifier;
 	}
-	public void setDehumidifier(int dehumidifier) {
+	public void setDehumidifier(double dehumidifier) {
 		this.dehumidifier = dehumidifier;
 	}
-	public int getMinimumServiceLength() {
+	public double getMinimumServiceLength() {
 		return minimumServiceLength;
 	}
-	public void setMinimumServiceLength(int minimumServiceLength) {
+	public void setMinimumServiceLength(double minimumServiceLength) {
 		this.minimumServiceLength = minimumServiceLength;
 	}
-	public int getElectricalPanel() {
+	public double getElectricalPanel() {
 		return electricalPanel;
 	}
-	public void setElectricalPanel(int electricalPanel) {
+	public void setElectricalPanel(double electricalPanel) {
 		this.electricalPanel = electricalPanel;
 	}
 

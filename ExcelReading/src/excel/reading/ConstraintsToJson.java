@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -12,10 +13,12 @@ import java.util.Map;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.util.CellAddress;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -36,6 +39,8 @@ public class ConstraintsToJson {
 		// TODO Auto-generated method stub
 		ConstraintsToJson.getConstraintsKey();
 		ConstraintsToJson.readConstraintsExcel();
+		
+
 
 	}
 
@@ -188,26 +193,45 @@ public class ConstraintsToJson {
 					structureDetails.setItLoad(0);
 					structureDetails.setMinimumServiceLength(0);
 					structureDetails.setElectricalPanel(0);
-					structureDetails.setValue(0);
+				
+					
 
 					if (StructureDetailsList.size() >= 4) // means dual bay
 					{
-						structureDetails.setLength(Double.valueOf(getCellValue(row.getCell(cellNumber++)).toString()));
+						structureDetails.setLength(Double.valueOf(getCellValue(row.getCell(cellNumber)).toString()));
 						structureDetails.setType(getCellValue(row.getCell(0)).toString());
 						structureDetails.setBayType("dual");
+						if(!CoolingStructureMap.coolingType.contains("CRA"))
+						{
+							int newCell1 =  cellNumber + (coolingTypesList.size() - cellNumber)  + (coolingTypesList.size() - 2) + 1 ;
+							structureDetails.setValue(row.getCell(newCell1) == null  ? 0.0 :  Double.valueOf(getCellValue(row.getCell(cellNumber + coolingTypesList.size())).toString()));
+							
+						}
+						else
+						{
+						structureDetails.setValue(0);	
+						int newCell1 =  cellNumber + (coolingTypesList.size() + 4 - cellNumber)  + (coolingTypesList.size() - 2) + 2 ;
+						int newCell2 =  cellNumber + (coolingTypesList.size() + 4 - cellNumber)  + (coolingTypesList.size() - 2) + 4;
+						structureDetails.setMinimumServiceLength(Double.valueOf(getCellValue(row.getCell(newCell1)).toString()) );
+						structureDetails.setElectricalPanel(Double.valueOf(getCellValue(row.getCell(newCell2)).toString()) );
+						}
+						cellNumber++;
 
 					} else {
 						if (!CoolingStructureMap.coolingType.contains("CRA")) {
 							structureDetails
-									.setLength(Double.valueOf(getCellValue(row.getCell(cellNumber++)).toString()));
+									.setLength(Double.valueOf(getCellValue(row.getCell(cellNumber)).toString()));
 							structureDetails.setType(getCellValue(row.getCell(0)).toString());
 							structureDetails.setBayType("Single");
-
+							int newCell = cellNumber + coolingTypesList.size();
+							structureDetails.setValue(row.getCell(newCell) == null  ? 0.0 :  Double.valueOf(getCellValue(row.getCell(cellNumber + coolingTypesList.size())).toString()));
+							cellNumber++;
 						} else {
 
 							structureDetails.setBayType("Single");
 							structureDetails.setLength(0);
 							structureDetails.setType(getCellValue(row.getCell(0)).toString());
+							structureDetails.setValue(0);
 						}
 					}
 					if (structureDetails.getType().contains("NON")) {
@@ -226,6 +250,8 @@ public class ConstraintsToJson {
 		StringBuilder writeUpRack = new StringBuilder();
 
 		writeUpRack.append("[");
+		
+		
 		Iterator<Map.Entry<String, List<CoolingStructureMap>>> iterator = uPSCoolingStructureMap.entrySet().iterator();
 		while (iterator.hasNext()) {
 			Map.Entry<String, List<CoolingStructureMap>> entry = iterator.next();
@@ -256,7 +282,8 @@ public class ConstraintsToJson {
 							.append(" \"dehumidifier\" : \"").append(structureDetails.getDehumidifier()).append("\" ,")
 							.append(" \"minimumServiceLength\" : \"").append(structureDetails.getMinimumServiceLength())
 							.append("\" ,").append(" \"electricalPanel\" : \"")
-							.append(structureDetails.getElectricalPanel()).append("\" },");
+							.append(structureDetails.getElectricalPanel()).append("\" ,").append(" \"itLoad\" : \"")
+							.append(structureDetails.getItLoad()).append("\" },");
 
 				}
 				writeUpRack.append("]},");
