@@ -200,7 +200,7 @@ public class ConstraintsToJson {
 					{
 						structureDetails.setLength(Double.valueOf(getCellValue(row.getCell(cellNumber)).toString()));
 						structureDetails.setType(getCellValue(row.getCell(0)).toString());
-						structureDetails.setBayType("dual");
+						structureDetails.setBayType("Dual");
 						if(!CoolingStructureMap.coolingType.contains("CRA"))
 						{
 							int newCell1 =  cellNumber + (coolingTypesList.size() - cellNumber)  + (coolingTypesList.size() - 2) + 1 ;
@@ -273,17 +273,17 @@ public class ConstraintsToJson {
 					writeUpRack.append("{");
 					StructureDetails structureDetails = coolingStructureMap.getStructureDetailsList().get(m);
 					writeUpRack.append(" \"type\" : \"").append(structureDetails.getType()).append("\" ,")
-							.append(" \"length\" : \"").append(structureDetails.getLength()).append("\" ,")
+							.append(" \"length\" : ").append(structureDetails.getLength()).append(" ,")
 							.append(" \"bayType\" : \"").append(structureDetails.getBayType()).append("\" ,")
-							.append(" \"value\" : \"").append(structureDetails.getValue()).append("\" ,")
+							.append(" \"value\" : ").append(structureDetails.getValue()).append(" ,")
 							.append(" \"structureType\" : \"").append(structureDetails.getStructureType())
-							.append("\" ,").append(" \"structureValue\" : \"")
-							.append(structureDetails.getStructureValue()).append("\" ,")
-							.append(" \"dehumidifier\" : \"").append(structureDetails.getDehumidifier()).append("\" ,")
-							.append(" \"minimumServiceLength\" : \"").append(structureDetails.getMinimumServiceLength())
-							.append("\" ,").append(" \"electricalPanel\" : \"")
-							.append(structureDetails.getElectricalPanel()).append("\" ,").append(" \"itLoad\" : \"")
-							.append(structureDetails.getItLoad()).append("\" },");
+							.append("\" ,").append(" \"structureValue\" : ")
+							.append(structureDetails.getStructureValue()).append(" ,")
+							.append(" \"dehumidifier\" : ").append(structureDetails.getDehumidifier()).append(" ,")
+							.append(" \"minimumServiceLength\" : ").append(structureDetails.getMinimumServiceLength())
+							.append(" ,").append(" \"electricalPanel\" : ")
+							.append(structureDetails.getElectricalPanel()).append(" ,").append(" \"itLoad\" : ")
+							.append(structureDetails.getItLoad()).append(" },");
 
 				}
 				writeUpRack.append("]},");
