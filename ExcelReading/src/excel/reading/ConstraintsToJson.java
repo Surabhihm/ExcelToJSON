@@ -39,8 +39,6 @@ public class ConstraintsToJson {
 		// TODO Auto-generated method stub
 		ConstraintsToJson.getConstraintsKey();
 		ConstraintsToJson.readConstraintsExcel();
-		
-
 
 	}
 
@@ -97,7 +95,10 @@ public class ConstraintsToJson {
 					writeUpData = readContainerUPSConstraintsExcel(workbook, sheetNum);
 					mapper.writerWithDefaultPrettyPrinter().writeValue(new File(targetFile), writeUpData.toString());
 					break;
-
+				case "ERVAndARS":
+					writeUpData = readERVAndARSConstraintsExcel(workbook, sheetNum);
+					mapper.writerWithDefaultPrettyPrinter().writeValue(new File(targetFile), writeUpData.toString());
+					break;
 				default:
 					break;
 				}
@@ -193,27 +194,29 @@ public class ConstraintsToJson {
 					structureDetails.setItLoad(0);
 					structureDetails.setMinimumServiceLength(0);
 					structureDetails.setElectricalPanel(0);
-				
-					
 
 					if (StructureDetailsList.size() >= 4) // means dual bay
 					{
 						structureDetails.setLength(Double.valueOf(getCellValue(row.getCell(cellNumber)).toString()));
 						structureDetails.setType(getCellValue(row.getCell(0)).toString());
 						structureDetails.setBayType("Dual");
-						if(!CoolingStructureMap.coolingType.contains("CRA"))
-						{
-							int newCell1 =  cellNumber + (coolingTypesList.size() - cellNumber)  + (coolingTypesList.size() - 2) + 1 ;
-							structureDetails.setValue(row.getCell(newCell1) == null  ? 0.0 :  Double.valueOf(getCellValue(row.getCell(cellNumber + coolingTypesList.size())).toString()));
-							
-						}
-						else
-						{
-						structureDetails.setValue(0);	
-						int newCell1 =  cellNumber + (coolingTypesList.size() + 4 - cellNumber)  + (coolingTypesList.size() - 2) + 2 ;
-						int newCell2 =  cellNumber + (coolingTypesList.size() + 4 - cellNumber)  + (coolingTypesList.size() - 2) + 4;
-						structureDetails.setMinimumServiceLength(Double.valueOf(getCellValue(row.getCell(newCell1)).toString()) );
-						structureDetails.setElectricalPanel(Double.valueOf(getCellValue(row.getCell(newCell2)).toString()) );
+						if (!CoolingStructureMap.coolingType.contains("CRA")) {
+							int newCell1 = cellNumber + (coolingTypesList.size() - cellNumber)
+									+ (coolingTypesList.size() - 2) + 1;
+							structureDetails.setValue(row.getCell(newCell1) == null ? 0.0
+									: Double.valueOf(getCellValue(row.getCell(cellNumber + coolingTypesList.size()))
+											.toString()));
+
+						} else {
+							structureDetails.setValue(0);
+							int newCell1 = cellNumber + (coolingTypesList.size() + 4 - cellNumber)
+									+ (coolingTypesList.size() - 2) + 2;
+							int newCell2 = cellNumber + (coolingTypesList.size() + 4 - cellNumber)
+									+ (coolingTypesList.size() - 2) + 4;
+							structureDetails.setMinimumServiceLength(
+									Double.valueOf(getCellValue(row.getCell(newCell1)).toString()));
+							structureDetails
+									.setElectricalPanel(Double.valueOf(getCellValue(row.getCell(newCell2)).toString()));
 						}
 						cellNumber++;
 
@@ -224,7 +227,9 @@ public class ConstraintsToJson {
 							structureDetails.setType(getCellValue(row.getCell(0)).toString());
 							structureDetails.setBayType("Single");
 							int newCell = cellNumber + coolingTypesList.size();
-							structureDetails.setValue(row.getCell(newCell) == null  ? 0.0 :  Double.valueOf(getCellValue(row.getCell(cellNumber + coolingTypesList.size())).toString()));
+							structureDetails.setValue(row.getCell(newCell) == null ? 0.0
+									: Double.valueOf(getCellValue(row.getCell(cellNumber + coolingTypesList.size()))
+											.toString()));
 							cellNumber++;
 						} else {
 
@@ -250,8 +255,7 @@ public class ConstraintsToJson {
 		StringBuilder writeUpRack = new StringBuilder();
 
 		writeUpRack.append("[");
-		
-		
+
 		Iterator<Map.Entry<String, List<CoolingStructureMap>>> iterator = uPSCoolingStructureMap.entrySet().iterator();
 		while (iterator.hasNext()) {
 			Map.Entry<String, List<CoolingStructureMap>> entry = iterator.next();
@@ -278,8 +282,8 @@ public class ConstraintsToJson {
 							.append(" \"value\" : ").append(structureDetails.getValue()).append(" ,")
 							.append(" \"structureType\" : \"").append(structureDetails.getStructureType())
 							.append("\" ,").append(" \"structureValue\" : ")
-							.append(structureDetails.getStructureValue()).append(" ,")
-							.append(" \"dehumidifier\" : ").append(structureDetails.getDehumidifier()).append(" ,")
+							.append(structureDetails.getStructureValue()).append(" ,").append(" \"dehumidifier\" : ")
+							.append(structureDetails.getDehumidifier()).append(" ,")
 							.append(" \"minimumServiceLength\" : ").append(structureDetails.getMinimumServiceLength())
 							.append(" ,").append(" \"electricalPanel\" : ")
 							.append(structureDetails.getElectricalPanel()).append(" ,").append(" \"itLoad\" : ")
@@ -546,6 +550,33 @@ public class ConstraintsToJson {
 
 		ObjectMapper objectMapper = new ObjectMapper();
 		String finalJsonString;
+		try {
+			finalJsonString = objectMapper.writeValueAsString(modelDetailsList);
+			System.out.println(finalJsonString);
+			return finalJsonString;
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return "";
+	}
+
+	public static String readERVAndARSConstraintsExcel(Workbook workbook, int sheetNum) {
+		Sheet sheet = workbook.getSheetAt(sheetNum);
+		ArrayList<HashMap<String, String>> modelDetailsList = new ArrayList<HashMap<String, String>>();
+
+		for (int rowNumber = 1; rowNumber < sheet.getLastRowNum(); rowNumber++) {
+			Row row = sheet.getRow(rowNumber);
+			HashMap<String, String> modelDetails = new HashMap<String, String>();
+			Cell cell1 = row.getCell(2);
+			modelDetails.put("ErvandArs", getCellValue(cell1).toString());
+			Cell cell2 = row.getCell(3);
+			modelDetails.put("quantity", getCellValue(cell2).toString());
+			modelDetailsList.add(modelDetails);
+		}
+		ObjectMapper objectMapper = new ObjectMapper();
+		String finalJsonString;
+
 		try {
 			finalJsonString = objectMapper.writeValueAsString(modelDetailsList);
 			System.out.println(finalJsonString);
