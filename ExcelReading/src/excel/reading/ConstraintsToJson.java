@@ -346,24 +346,32 @@ public class ConstraintsToJson {
 		ArrayList<HashMap<String, String>> modelDetailsList = new ArrayList<HashMap<String, String>>();
 		JSONObject mappingKeys = (JSONObject) currentJSONKeys.get(workbook.getSheetName(sheetNum));
 		System.out.println(mappingKeys);
-
-		for (int rowNumber = 1; rowNumber < sheet.getLastRowNum(); rowNumber++) {
-			Row row = sheet.getRow(rowNumber);
-			HashMap<String, String> modelDetails = new HashMap<String, String>();
-			for (int columnNumber = 0; columnNumber < row.getLastCellNum(); columnNumber++) {
+		
+		for (int rowNumber = 2; rowNumber < sheet.getLastRowNum(); rowNumber++) {
+			Row row = sheet.getRow(rowNumber);	
+			for (int columnNumber = 1; columnNumber < row.getLastCellNum(); columnNumber++) {
 				Cell cell = row.getCell(columnNumber);
-				if (cell == null || getCellValue(cell) == null || getCellValue(cell).toString().isEmpty()) {
-					modelDetails.put(mappingKeys.get(Integer.toString(columnNumber)).toString(), Integer.toString(0));
+				if (rowNumber == 2) {
+					HashMap<String, String> modelDetails = new HashMap<String, String>();
+					if (cell == null || getCellValue(cell) == null || getCellValue(cell).toString().isEmpty()) {
+						modelDetails.put(mappingKeys.get(Integer.toString(rowNumber-2)).toString(), Integer.toString(0));
+					} else {
+						modelDetails.put(mappingKeys.get(Integer.toString(rowNumber-2)).toString(), getCellValue(cell).toString());
+					}
+					modelDetailsList.add(modelDetails);
 				} else {
-					modelDetails.put(mappingKeys.get(Integer.toString(columnNumber)).toString(),
-							getCellValue(cell).toString());
+					if (cell == null || getCellValue(cell) == null || getCellValue(cell).toString().isEmpty()) {
+						modelDetailsList.get(columnNumber-1).put(mappingKeys.get(Integer.toString(rowNumber-2)).toString(), Integer.toString(0));
+					} else {
+						modelDetailsList.get(columnNumber-1).put(mappingKeys.get(Integer.toString(rowNumber-2)).toString(),
+								getCellValue(cell).toString());
+					}
 				}
 			}
-			modelDetailsList.add(modelDetails);
 		}
 
 		ObjectMapper objectMapper = new ObjectMapper();
-		String finalJsonString;
+		String finalJsonString;		
 		try {
 			finalJsonString = objectMapper.writeValueAsString(modelDetailsList);
 			System.out.println(finalJsonString);
