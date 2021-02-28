@@ -99,6 +99,10 @@ public class ConstraintsToJson {
 					writeUpData = readERVAndARSConstraintsExcel(workbook, sheetNum);
 					mapper.writerWithDefaultPrettyPrinter().writeValue(new File(targetFile), writeUpData.toString());
 					break;
+				case "CRACoolingType":
+					writeUpData = readCRACoolingTypeConstraintsExcel(workbook, sheetNum);
+					mapper.writerWithDefaultPrettyPrinter().writeValue(new File(targetFile), writeUpData.toString());
+					break;
 				default:
 					break;
 				}
@@ -346,24 +350,28 @@ public class ConstraintsToJson {
 		ArrayList<HashMap<String, String>> modelDetailsList = new ArrayList<HashMap<String, String>>();
 		JSONObject mappingKeys = (JSONObject) currentJSONKeys.get(workbook.getSheetName(sheetNum));
 		System.out.println(mappingKeys);
-		
+
 		for (int rowNumber = 2; rowNumber < sheet.getLastRowNum(); rowNumber++) {
-			Row row = sheet.getRow(rowNumber);	
+			Row row = sheet.getRow(rowNumber);
 			for (int columnNumber = 1; columnNumber < row.getLastCellNum(); columnNumber++) {
 				Cell cell = row.getCell(columnNumber);
 				if (rowNumber == 2) {
 					HashMap<String, String> modelDetails = new HashMap<String, String>();
 					if (cell == null || getCellValue(cell) == null || getCellValue(cell).toString().isEmpty()) {
-						modelDetails.put(mappingKeys.get(Integer.toString(rowNumber-2)).toString(), Integer.toString(0));
+						modelDetails.put(mappingKeys.get(Integer.toString(rowNumber - 2)).toString(),
+								Integer.toString(0));
 					} else {
-						modelDetails.put(mappingKeys.get(Integer.toString(rowNumber-2)).toString(), getCellValue(cell).toString());
+						modelDetails.put(mappingKeys.get(Integer.toString(rowNumber - 2)).toString(),
+								getCellValue(cell).toString());
 					}
 					modelDetailsList.add(modelDetails);
 				} else {
 					if (cell == null || getCellValue(cell) == null || getCellValue(cell).toString().isEmpty()) {
-						modelDetailsList.get(columnNumber-1).put(mappingKeys.get(Integer.toString(rowNumber-2)).toString(), Integer.toString(0));
+						modelDetailsList.get(columnNumber - 1)
+								.put(mappingKeys.get(Integer.toString(rowNumber - 2)).toString(), Integer.toString(0));
 					} else {
-						modelDetailsList.get(columnNumber-1).put(mappingKeys.get(Integer.toString(rowNumber-2)).toString(),
+						modelDetailsList.get(columnNumber - 1).put(
+								mappingKeys.get(Integer.toString(rowNumber - 2)).toString(),
 								getCellValue(cell).toString());
 					}
 				}
@@ -371,7 +379,7 @@ public class ConstraintsToJson {
 		}
 
 		ObjectMapper objectMapper = new ObjectMapper();
-		String finalJsonString;		
+		String finalJsonString;
 		try {
 			finalJsonString = objectMapper.writeValueAsString(modelDetailsList);
 			System.out.println(finalJsonString);
@@ -589,6 +597,121 @@ public class ConstraintsToJson {
 			finalJsonString = objectMapper.writeValueAsString(modelDetailsList);
 			System.out.println(finalJsonString);
 			return finalJsonString;
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return "";
+	}
+
+	public static String readCRACoolingTypeConstraintsExcel(Workbook workbook, int sheetNum) {
+		Sheet sheet = workbook.getSheetAt(sheetNum);
+		ArrayList<HashMap<String, String>> modelDetailsList1 = new ArrayList<HashMap<String, String>>();
+		ArrayList<HashMap<String, String>> modelDetailsList2 = new ArrayList<HashMap<String, String>>();
+		JSONObject mappingKeys = (JSONObject) currentJSONKeys.get(workbook.getSheetName(sheetNum));
+		System.out.println(mappingKeys);
+		String coolingType1 = null;
+		String coolingType2 = null;
+		for (int rowNumber = 0; rowNumber < 6; rowNumber++) {
+			Row row = sheet.getRow(rowNumber);
+			if (rowNumber == 0) {
+				Cell cell1 = row.getCell(0);
+				Cell cell2 = row.getCell(1);
+				coolingType1 = getCellValue(cell1).toString() + '-' + getCellValue(cell2).toString();
+				continue;
+			}
+			if (rowNumber == 1) {
+				continue;
+			}
+			for (int columnNumber = 1; columnNumber < row.getLastCellNum(); columnNumber++) {
+				Cell cell = row.getCell(columnNumber);
+				if (rowNumber == 2) {
+					HashMap<String, String> modelDetails = new HashMap<String, String>();
+					if (cell != null || getCellValue(cell) != null || !getCellValue(cell).toString().isEmpty()) {
+						modelDetails.put(mappingKeys.get(Integer.toString(rowNumber - 2)).toString(),
+								getCellValue(cell).toString());
+					}
+					modelDetailsList1.add(modelDetails);
+				} else if (rowNumber == 5) {
+					if (cell == null || getCellValue(cell) == null || getCellValue(cell).toString().isEmpty()) {
+						modelDetailsList1.get(columnNumber - 1)
+								.put(mappingKeys.get(Integer.toString(rowNumber - 2)).toString(), Integer.toString(0));
+						modelDetailsList1.get(columnNumber - 1)
+								.put(mappingKeys.get(Integer.toString(rowNumber - 1)).toString(), Integer.toString(0));
+					} else {
+						modelDetailsList1.get(columnNumber - 1).put(
+								mappingKeys.get(Integer.toString(rowNumber - 2)).toString(),
+								getCellValue(cell).toString());
+						modelDetailsList1.get(columnNumber - 1).put(
+								mappingKeys.get(Integer.toString(rowNumber - 1)).toString(),
+								getCellValue(cell).toString());
+					}
+				} else {
+					if (cell != null || getCellValue(cell) != null || !getCellValue(cell).toString().isEmpty()) {
+						modelDetailsList1.get(columnNumber - 1).put(
+								mappingKeys.get(Integer.toString(rowNumber - 2)).toString(),
+								getCellValue(cell).toString());
+					}
+				}
+			}
+		}
+
+		for (int rowNumber = 7; rowNumber < sheet.getLastRowNum() + 1; rowNumber++) {
+			Row row = sheet.getRow(rowNumber);
+			if (rowNumber == 7) {
+				Cell cell1 = row.getCell(0);
+				Cell cell2 = row.getCell(1);
+				coolingType2 = getCellValue(cell1).toString() + '-' + getCellValue(cell2).toString();
+				continue;
+			}
+			if (rowNumber == 8) {
+				continue;
+			}
+			for (int columnNumber = 1; columnNumber < row.getLastCellNum(); columnNumber++) {
+				Cell cell = row.getCell(columnNumber);
+				if (rowNumber == 9) {
+					HashMap<String, String> modelDetails = new HashMap<String, String>();
+					if (cell != null || getCellValue(cell) != null || !getCellValue(cell).toString().isEmpty()) {
+						modelDetails.put(mappingKeys.get(Integer.toString(rowNumber - 9)).toString(),
+								getCellValue(cell).toString());
+					}
+					modelDetailsList2.add(modelDetails);
+				} else if (rowNumber == 12) {
+					if (cell == null || getCellValue(cell) == null || getCellValue(cell).toString().isEmpty()) {
+						modelDetailsList2.get(columnNumber - 1)
+								.put(mappingKeys.get(Integer.toString(rowNumber - 9)).toString(), Integer.toString(0));
+						modelDetailsList2.get(columnNumber - 1)
+								.put(mappingKeys.get(Integer.toString(rowNumber - 8)).toString(), Integer.toString(0));
+					} else {
+						modelDetailsList2.get(columnNumber - 1).put(
+								mappingKeys.get(Integer.toString(rowNumber - 9)).toString(),
+								getCellValue(cell).toString());
+						modelDetailsList2.get(columnNumber - 1).put(
+								mappingKeys.get(Integer.toString(rowNumber - 8)).toString(),
+								getCellValue(cell).toString());
+					}
+				} else {
+					if (cell != null || getCellValue(cell) != null || !getCellValue(cell).toString().isEmpty()) {
+						modelDetailsList2.get(columnNumber - 1).put(
+								mappingKeys.get(Integer.toString(rowNumber - 9)).toString(),
+								getCellValue(cell).toString());
+					}
+				}
+			}
+		}
+
+		ObjectMapper objectMapper = new ObjectMapper();
+		StringBuilder writeUp = new StringBuilder();
+		String finalJsonString1;
+		String finalJsonString2;
+		try {
+			finalJsonString1 = objectMapper.writeValueAsString(modelDetailsList1);
+			finalJsonString2 = objectMapper.writeValueAsString(modelDetailsList1);
+			writeUp.append("[{").append("\"coolingType\" : \"").append(coolingType1).append("\",")
+					.append(" \"coolingDetails\" : ").append(finalJsonString1).append("},{")
+					.append("\"coolingType\" : \"").append(coolingType2).append("\",").append(" \"coolingDetails\" : ")
+					.append(finalJsonString2).append("}]");			
+			return writeUp.toString();
 		} catch (JsonProcessingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
