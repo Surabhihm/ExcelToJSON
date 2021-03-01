@@ -20,24 +20,25 @@
 		"4": "pwr"
 	},
 	"UPS": {
-		"0": "family",
-		"1": "sku",
-		"2": "electricalPannel",
-		"3": "width",
-		"4": "depth",
-		"5": "batteryModules",
-		"6": "runtime",
-		"7": "KVA",
-		"8": "pwrFactor",
-		"9": "familyForReport",
-		"10": "upsDescription"
+		"0": "KVA",
+		"1": "family",
+		"2": "upsDescription",		
+		"3": "familyForReport",
+		"4": "sku",
+		"5": "electricalPannel",
+		"6": "width",
+		"7": "depth",
+		"8": "layout",
+		"9": "type",
+		"10": "pwrFactor",
+		"11": "runtime"	
 	},
 	"CRACoolingType": {
 		"0": "kw",
 		"1": "Model",
-        "2": "Length",
-        "3": "cost",
-        "4": "value"
+		"2": "Length",
+		"3": "cost",
+		"4": "value"
 	}
 }
     

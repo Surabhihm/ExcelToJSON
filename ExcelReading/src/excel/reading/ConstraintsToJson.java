@@ -527,49 +527,162 @@ public class ConstraintsToJson {
 
 	public static String readUPSDetailsConstraintsExcel(Workbook workbook, int sheetNum) {
 		Sheet sheet = workbook.getSheetAt(sheetNum);
-		ArrayList<HashMap<String, String>> modelDetailsList = new ArrayList<HashMap<String, String>>();
-		JSONObject mappingKeys = (JSONObject) currentJSONKeys.get(workbook.getSheetName(sheetNum));
-		System.out.println(mappingKeys);
-		boolean IsResetRow = true;
-		for (int rowNumber = 0; rowNumber < sheet.getLastRowNum(); rowNumber++) {
-			Row row = sheet.getRow(rowNumber);
-			if (row.getCell(0).toString().equals("GALAXY VS/VM")) {
-				break;
-			}
-			if (row.getCell(0).toString().equals("SYMMETRA")) {
-				IsResetRow = true;
-				continue;
-			}
-
-			for (int columnNumber = 0; columnNumber < row.getLastCellNum(); columnNumber++) {
+		ArrayList<HashMap<String, String>> modelDetailsList1 = new ArrayList<HashMap<String, String>>();	
+		ArrayList<HashMap<String, String>> modelDetailsList2 = new ArrayList<HashMap<String, String>>();
+		ArrayList<HashMap<String, String>> modelDetailsList3 = new ArrayList<HashMap<String, String>>();
+		
+		for (int rowNumber = 1; rowNumber < 13; rowNumber++) {
+			Row row = sheet.getRow(rowNumber);	
+			for (int columnNumber = 1; columnNumber < row.getLastCellNum(); columnNumber++) {
 				Cell cell = row.getCell(columnNumber);
-				if (IsResetRow) {
+				if (rowNumber == 1) {
 					HashMap<String, String> modelDetails = new HashMap<String, String>();
 					if (cell == null || getCellValue(cell) == null || getCellValue(cell).toString().isEmpty()) {
-						modelDetails.put(Integer.toString(rowNumber), Integer.toString(0));
+						modelDetails.put(Integer.toString(rowNumber-1), Integer.toString(0));
 					} else {
-						modelDetails.put(Integer.toString(rowNumber), getCellValue(cell).toString());
+						modelDetails.put(Integer.toString(rowNumber-1), getCellValue(cell).toString());
 					}
-					modelDetailsList.add(modelDetails);
+					modelDetailsList1.add(modelDetails);
 				} else {
 					if (cell == null || getCellValue(cell) == null || getCellValue(cell).toString().isEmpty()) {
-						modelDetailsList.get(columnNumber).put(Integer.toString(rowNumber), Integer.toString(0));
+						modelDetailsList1.get(columnNumber-1).put(Integer.toString(rowNumber-1), Integer.toString(0));
 					} else {
-						modelDetailsList.get(columnNumber).put(Integer.toString(rowNumber),
+						modelDetailsList1.get(columnNumber-1).put(Integer.toString(rowNumber-1),
 								getCellValue(cell).toString());
 					}
 				}
 			}
-			IsResetRow = false;
-
+		}
+		
+		for (int rowNumber = 15; rowNumber < 27; rowNumber++) {
+			Row row = sheet.getRow(rowNumber);	
+			for (int columnNumber = 1; columnNumber < row.getLastCellNum(); columnNumber++) {
+				Cell cell = row.getCell(columnNumber);
+				if (rowNumber == 15) {
+					HashMap<String, String> modelDetails = new HashMap<String, String>();
+					if (cell == null || getCellValue(cell) == null || getCellValue(cell).toString().isEmpty()) {
+						modelDetails.put(Integer.toString(rowNumber-15), Integer.toString(0));
+					} else {
+						modelDetails.put(Integer.toString(rowNumber-15), getCellValue(cell).toString());
+					}
+					modelDetailsList2.add(modelDetails);
+				} else {
+					if (cell == null || getCellValue(cell) == null || getCellValue(cell).toString().isEmpty()) {
+						modelDetailsList2.get(columnNumber-1).put(Integer.toString(rowNumber-15), Integer.toString(0));
+					} else {
+						modelDetailsList2.get(columnNumber-1).put(Integer.toString(rowNumber-15),
+								getCellValue(cell).toString());
+					}
+				}
+			}
+		}
+		
+		for (int rowNumber = 29; rowNumber < 41; rowNumber++) {
+			Row row = sheet.getRow(rowNumber);	
+			for (int columnNumber = 1; columnNumber < row.getLastCellNum(); columnNumber++) {
+				Cell cell = row.getCell(columnNumber);
+				if (rowNumber == 29) {
+					HashMap<String, String> modelDetails = new HashMap<String, String>();
+					if (cell == null || getCellValue(cell) == null || getCellValue(cell).toString().isEmpty()) {
+						modelDetails.put(Integer.toString(rowNumber-29), Integer.toString(0));
+					} else {
+						modelDetails.put(Integer.toString(rowNumber-29), getCellValue(cell).toString());
+					}
+					modelDetailsList3.add(modelDetails);
+				} else {
+					if (cell == null || getCellValue(cell) == null || getCellValue(cell).toString().isEmpty()) {
+						modelDetailsList3.get(columnNumber-1).put(Integer.toString(rowNumber-29), Integer.toString(0));
+					} else {
+						modelDetailsList3.get(columnNumber-1).put(Integer.toString(rowNumber-29),
+								getCellValue(cell).toString());
+					}
+				}
+			}
 		}
 
 		ObjectMapper objectMapper = new ObjectMapper();
-		String finalJsonString;
+		StringBuilder writeUp = new StringBuilder();
+		String finalJsonString1;		
 		try {
-			finalJsonString = objectMapper.writeValueAsString(modelDetailsList);
-			System.out.println(finalJsonString);
-			return finalJsonString;
+			finalJsonString1 = objectMapper.writeValueAsString(modelDetailsList1);			
+			writeUp.append("{\"SYMMETRA\" : {");
+			for (int i = 0; i < modelDetailsList1.size(); i++) {
+				String cellValue = modelDetailsList1.get(i).get("6").toString();
+				String familyForReport  = "SYM" + cellValue.substring(cellValue.indexOf("K")+1, cellValue.indexOf("H")+1);
+				writeUp.append("\"");
+				writeUp.append(modelDetailsList1.get(i).get("5"));
+				writeUp.append("\": {");
+				writeUp.append("\"family\": \"").append(modelDetailsList1.get(i).get("3"))
+				.append("\", \"sku\": \"").append(modelDetailsList1.get(i).get("6"))
+				.append("\", \"electricalPannel\": \"").append(modelDetailsList1.get(i).get("7"))
+				.append("\", \"width\": \"").append(modelDetailsList1.get(i).get("8"))
+				.append("\", \"depth\": \"").append(modelDetailsList1.get(i).get("9"))				
+				.append("\", \"layout\": \"").append(modelDetailsList1.get(i).get("10"))
+				.append("\", \"runtime\": \"").append("8")
+				.append("\", \"KVA\": \"").append(modelDetailsList1.get(i).get("2"))
+				.append("\", \"type\": \"").append(modelDetailsList1.get(i).get("11"))
+				.append("\", \"pwrFactor\": \"").append("1")
+				.append("\", \"familyForReport\": \"").append(familyForReport)
+				.append("\", \"upsDescription\": \"").append(modelDetailsList1.get(i).get("4")).append("\"");
+				if(i == (modelDetailsList1.size() - 1)){
+					writeUp.append("}");
+				}
+				else {
+					writeUp.append("},");
+				}					
+			}
+			writeUp.append("}, ");
+			writeUp.append("\"GALAXY\" : {");
+			for (int i = 0; i < modelDetailsList2.size(); i++) {				
+				writeUp.append("\"");
+				writeUp.append(modelDetailsList2.get(i).get("5"));
+				writeUp.append("\": {");
+				writeUp.append("\"family\": \"").append(modelDetailsList2.get(i).get("3"))
+				.append("\", \"sku\": \"").append(modelDetailsList2.get(i).get("6"))
+				.append("\", \"electricalPannel\": \"").append(modelDetailsList2.get(i).get("7"))
+				.append("\", \"width\": \"").append(modelDetailsList2.get(i).get("8"))
+				.append("\", \"depth\": \"").append(modelDetailsList2.get(i).get("9"))				
+				.append("\", \"layout\": \"").append(modelDetailsList2.get(i).get("10"))
+				.append("\", \"runtime\": \"").append("8")
+				.append("\", \"KVA\": \"").append(modelDetailsList2.get(i).get("2"))
+				.append("\", \"type\": \"").append(modelDetailsList2.get(i).get("11"))
+				.append("\", \"pwrFactor\": \"").append("1")
+				.append("\", \"familyForReport\": \"").append(modelDetailsList2.get(i).get("3"))
+				.append("\", \"upsDescription\": \"").append(modelDetailsList2.get(i).get("4")).append("\"");
+				if(i == (modelDetailsList2.size() - 1)){
+					writeUp.append("}");
+				}
+				else {
+					writeUp.append("},");
+				}					
+			}
+			writeUp.append("}, ");
+			writeUp.append("\"EASY UPS\" : {");
+			for (int i = 0; i < modelDetailsList3.size(); i++) {				
+				writeUp.append("\"");
+				writeUp.append(modelDetailsList3.get(i).get("5"));
+				writeUp.append("\": {");
+				writeUp.append("\"family\": \"").append(modelDetailsList3.get(i).get("3"))
+				.append("\", \"sku\": \"").append(modelDetailsList3.get(i).get("6"))
+				.append("\", \"electricalPannel\": \"").append(modelDetailsList3.get(i).get("7"))
+				.append("\", \"width\": \"").append(modelDetailsList3.get(i).get("8"))
+				.append("\", \"depth\": \"").append(modelDetailsList3.get(i).get("9"))				
+				.append("\", \"layout\": \"").append(modelDetailsList3.get(i).get("10"))
+				.append("\", \"runtime\": \"").append("8")
+				.append("\", \"KVA\": \"").append(modelDetailsList3.get(i).get("2"))
+				.append("\", \"type\": \"").append(modelDetailsList3.get(i).get("11"))
+				.append("\", \"pwrFactor\": \"").append("1")
+				.append("\", \"familyForReport\": \"").append("EASY UPS")
+				.append("\", \"upsDescription\": \"").append(modelDetailsList3.get(i).get("4")).append("\"");
+				if(i == (modelDetailsList3.size() - 1)){
+					writeUp.append("}");
+				}
+				else {
+					writeUp.append("},");
+				}								
+			}
+			writeUp.append("}}");	
+			return writeUp.toString();
 		} catch (JsonProcessingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -706,11 +819,11 @@ public class ConstraintsToJson {
 		String finalJsonString2;
 		try {
 			finalJsonString1 = objectMapper.writeValueAsString(modelDetailsList1);
-			finalJsonString2 = objectMapper.writeValueAsString(modelDetailsList1);
+			finalJsonString2 = objectMapper.writeValueAsString(modelDetailsList2);
 			writeUp.append("[{").append("\"coolingType\" : \"").append(coolingType1).append("\",")
 					.append(" \"coolingDetails\" : ").append(finalJsonString1).append("},{")
 					.append("\"coolingType\" : \"").append(coolingType2).append("\",").append(" \"coolingDetails\" : ")
-					.append(finalJsonString2).append("}]");			
+					.append(finalJsonString2).append("}]");
 			return writeUp.toString();
 		} catch (JsonProcessingException e) {
 			// TODO Auto-generated catch block
