@@ -502,13 +502,13 @@ public class ConstraintsToJson {
 		StringBuilder writeUpData = new StringBuilder();
 		writeUpData.append("[{");
 		for (int i = 1; i < modelDetailsList.size(); i++) {
-			writeUpData.append("{ \"");
+			writeUpData.append("\"");
 			writeUpData.append(modelDetailsList.get(i).get(0));
 			writeUpData.append("\": {");
 			writeUpData.append("\"model\" :\"");
 			writeUpData
 					.append(modelDetailsList.get(i).get(0).substring(modelDetailsList.get(i).get(0).indexOf("_") + 1));
-			writeUpData.append("\", \"");
+			writeUpData.append("\", ");
 			writeUpData.append("\"description\" :\"");
 			writeUpData.append(modelDetailsList.get(i).get(1));
 			writeUpData.append("\"},");
