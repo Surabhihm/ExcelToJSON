@@ -103,6 +103,14 @@ public class ConstraintsToJson {
 					writeUpData = readCRACoolingTypeConstraintsExcel(workbook, sheetNum);
 					mapper.writerWithDefaultPrettyPrinter().writeValue(new File(targetFile), writeUpData.toString());
 					break;
+				case "SingleModule":
+					writeUpData = readSingleModuleConstraintsExcel(workbook, sheetNum);
+					mapper.writerWithDefaultPrettyPrinter().writeValue(new File(targetFile), writeUpData.toString());
+					break;
+				case "DualModule":
+					writeUpData = readSingleModuleConstraintsExcel(workbook, sheetNum);
+					mapper.writerWithDefaultPrettyPrinter().writeValue(new File(targetFile), writeUpData.toString());
+					break;
 				default:
 					break;
 				}
@@ -127,31 +135,24 @@ public class ConstraintsToJson {
 		Map<String, List<CoolingStructureMap>> uPSCoolingStructureMap = new HashMap<String, List<CoolingStructureMap>>();
 		List<String> coolingTypesList = new ArrayList<String>();
 		List<String> coolingIDList = new ArrayList<String>();
-		
-	
-		
+
 		List<String> enclosureList = new ArrayList<String>();
-		
+
 		enclosureList.add("20' ISO");
 		enclosureList.add("40' ISO");
 		enclosureList.add("25' NON ISO");
 		enclosureList.add("45' NON ISO");
 		enclosureList.add("45' DUAL BAY");
-		
+
 		List<EnclosureCoolingStrcture> enclosureCoolingStrctureList = new ArrayList<EnclosureCoolingStrcture>();
-		
-		for(int k =0 ; k < enclosureList.size() ; k++)
-		{
+
+		for (int k = 0; k < enclosureList.size(); k++) {
 			EnclosureCoolingStrcture enclosureCoolingStrcture = new EnclosureCoolingStrcture();
 			enclosureCoolingStrcture.containerType = enclosureList.get(k);
 			enclosureCoolingStrcture.coolingDetailsList = new ArrayList<CoolingDetails>();
 			enclosureCoolingStrctureList.add(enclosureCoolingStrcture);
 		}
 
-		
-		
-		
-		
 		for (Row row : sheet) {
 
 			if (row.getCell(0) != null && !getCellValue(row.getCell(0)).toString().equals("")
@@ -185,19 +186,17 @@ public class ConstraintsToJson {
 					coolingTypesList.add(new String(CoolingTypeValue));
 					coolingIDList.add(coolingID);
 				}
-				
-				for(int j = 0 ; j < enclosureCoolingStrctureList.size() ; j++)
-				{
+
+				for (int j = 0; j < enclosureCoolingStrctureList.size(); j++) {
 					List<CoolingDetails> contList = enclosureCoolingStrctureList.get(j).getCoolingDetails();
 					CoolingDetails coolingDetails = new CoolingDetails();
 					coolingDetails.setCoolingID(coolingID);
 					coolingDetails.setCoolingType(new String(CoolingTypeValue));
 					coolingDetails.setType("");
-					Double itLoad = Double.valueOf(getCellValue(row.getCell(5+j)).toString());
+					Double itLoad = Double.valueOf(getCellValue(row.getCell(5 + j)).toString());
 					coolingDetails.setItLoad(itLoad);
 					contList.add(coolingDetails);
-					
-					
+
 				}
 
 			}
@@ -245,19 +244,23 @@ public class ConstraintsToJson {
 						structureDetails.setLength(Double.valueOf(getCellValue(row.getCell(cellNumber)).toString()));
 						structureDetails.setType(getCellValue(row.getCell(0)).toString());
 						structureDetails.setBayType("Dual");
-						if(!CoolingStructureMap.coolingType.contains("CRA"))
-						{
-							int newCell1 =  cellNumber + (coolingTypesList.size() - cellNumber)  + (coolingTypesList.size() - 2) + 1 ;
-							structureDetails.setValue(row.getCell(newCell1) == null  ? 0.0 :  Double.valueOf(getCellValue(row.getCell(cellNumber + coolingTypesList.size())).toString()));
-							
-						}
-						else
-						{
-						structureDetails.setValue(0);	
-						int newCell1 =  cellNumber + (coolingTypesList.size() + 4 - cellNumber)  + (coolingTypesList.size() - 2) + 2 ;
-						int newCell2 =  cellNumber + (coolingTypesList.size() + 4 - cellNumber)  + (coolingTypesList.size() - 2) + 4;
-						structureDetails.setMinimumServiceLength(Double.valueOf(getCellValue(row.getCell(newCell1)).toString()) );
-						structureDetails.setElectricalPanel(Double.valueOf(getCellValue(row.getCell(newCell2)).toString()) );
+						if (!CoolingStructureMap.coolingType.contains("CRA")) {
+							int newCell1 = cellNumber + (coolingTypesList.size() - cellNumber)
+									+ (coolingTypesList.size() - 2) + 1;
+							structureDetails.setValue(row.getCell(newCell1) == null ? 0.0
+									: Double.valueOf(getCellValue(row.getCell(cellNumber + coolingTypesList.size()))
+											.toString()));
+
+						} else {
+							structureDetails.setValue(0);
+							int newCell1 = cellNumber + (coolingTypesList.size() + 4 - cellNumber)
+									+ (coolingTypesList.size() - 2) + 2;
+							int newCell2 = cellNumber + (coolingTypesList.size() + 4 - cellNumber)
+									+ (coolingTypesList.size() - 2) + 4;
+							structureDetails.setMinimumServiceLength(
+									Double.valueOf(getCellValue(row.getCell(newCell1)).toString()));
+							structureDetails
+									.setElectricalPanel(Double.valueOf(getCellValue(row.getCell(newCell2)).toString()));
 						}
 						cellNumber++;
 
@@ -268,7 +271,9 @@ public class ConstraintsToJson {
 							structureDetails.setType(getCellValue(row.getCell(0)).toString());
 							structureDetails.setBayType("Single");
 							int newCell = cellNumber + coolingTypesList.size();
-							structureDetails.setValue(row.getCell(newCell) == null  ? 0.0 :  Double.valueOf(getCellValue(row.getCell(cellNumber + coolingTypesList.size())).toString()));
+							structureDetails.setValue(row.getCell(newCell) == null ? 0.0
+									: Double.valueOf(getCellValue(row.getCell(cellNumber + coolingTypesList.size()))
+											.toString()));
 							cellNumber++;
 						} else {
 
@@ -321,12 +326,11 @@ public class ConstraintsToJson {
 							.append(" \"value\" : ").append(structureDetails.getValue()).append(" ,")
 							.append(" \"structureType\" : \"").append(structureDetails.getStructureType())
 							.append("\" ,").append(" \"structureValue\" : ")
-							.append(structureDetails.getStructureValue()).append(" ,")
-							.append(" \"dehumidifier\" : ").append(structureDetails.getDehumidifier()).append(" ,")
+							.append(structureDetails.getStructureValue()).append(" ,").append(" \"dehumidifier\" : ")
+							.append(structureDetails.getDehumidifier()).append(" ,")
 							.append(" \"minimumServiceLength\" : ").append(structureDetails.getMinimumServiceLength())
 							.append(" ,").append(" \"electricalPanel\" : ")
-							.append(structureDetails.getElectricalPanel()).append(" ,")
-							.append(" },");
+							.append(structureDetails.getElectricalPanel()).append(" ,").append(" },");
 
 				}
 				writeUpRack.append("]},");
@@ -336,31 +340,30 @@ public class ConstraintsToJson {
 		}
 
 		writeUpRack.append("]");
-		
+
 		System.out.print(enclosureCoolingStrctureList);
-		
-		performWriteUpForEnclosureCooling(enclosureCoolingStrctureList );
-		
+
+		performWriteUpForEnclosureCooling(enclosureCoolingStrctureList);
 
 		return writeUpRack.toString();
 
 	}
-	
+
 	private void performWriteUpForEnclosureCooling(List<EnclosureCoolingStrcture> enclosureCoolingStrctureList) {
-		
+
 		StringBuilder writeUpEnclosureCooling = new StringBuilder();
-		
+
 		writeUpEnclosureCooling.append("[");
-		for(int m = 0 ; m < enclosureCoolingStrctureList.size() ; m++)
-		{
+		for (int m = 0; m < enclosureCoolingStrctureList.size(); m++) {
 			writeUpEnclosureCooling.append("{");
-			writeUpEnclosureCooling.append("\"containerType\": \"").append(enclosureCoolingStrctureList.get(m).getContainerType()).append("\",");
+			writeUpEnclosureCooling.append("\"containerType\": \"")
+					.append(enclosureCoolingStrctureList.get(m).getContainerType()).append("\",");
 			List<CoolingDetails> coolDetailList = enclosureCoolingStrctureList.get(m).getCoolingDetails();
 			writeUpEnclosureCooling.append("\"coolingDetails\" : [");
-			for(int n = 0 ; n < coolDetailList.size() ; n++)
-			{
+			for (int n = 0; n < coolDetailList.size(); n++) {
 				writeUpEnclosureCooling.append("{");
-				writeUpEnclosureCooling.append("\"coolingType\": \"").append(coolDetailList.get(n).getCoolingType()).append("\",");
+				writeUpEnclosureCooling.append("\"coolingType\": \"").append(coolDetailList.get(n).getCoolingType())
+						.append("\",");
 				writeUpEnclosureCooling.append("\"Id\": \"").append(coolDetailList.get(n).getCoolingID()).append("\",");
 				writeUpEnclosureCooling.append("\"type\": \"").append(coolDetailList.get(n).getType()).append("\",");
 				writeUpEnclosureCooling.append("\"itLoad\": \"").append(coolDetailList.get(n).getItLoad()).append("\"");
@@ -370,12 +373,12 @@ public class ConstraintsToJson {
 			writeUpEnclosureCooling.append("},");
 		}
 		writeUpEnclosureCooling.append("]");
-		
+
 		ObjectMapper mapper = new ObjectMapper();
-		String targetFile = filePath + "\\outputResources\\" + "enclosureCooling"
-		+ "ConstraintsJson.txt";
+		String targetFile = filePath + "\\outputResources\\" + "enclosureCooling" + "ConstraintsJson.txt";
 		try {
-			mapper.writerWithDefaultPrettyPrinter().writeValue(new File(targetFile), writeUpEnclosureCooling.toString());
+			mapper.writerWithDefaultPrettyPrinter().writeValue(new File(targetFile),
+					writeUpEnclosureCooling.toString());
 		} catch (JsonGenerationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -386,13 +389,10 @@ public class ConstraintsToJson {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		
-		// TODO Auto-generated method stub
-		
-	}
 
-	
+		// TODO Auto-generated method stub
+
+	}
 
 	private static Object getCellValue(Cell cell) {
 		Object cellValue = null;
@@ -439,7 +439,7 @@ public class ConstraintsToJson {
 		JSONObject mappingKeys = (JSONObject) currentJSONKeys.get(workbook.getSheetName(sheetNum));
 		System.out.println(mappingKeys);
 
-		for (int rowNumber = 2; rowNumber < sheet.getLastRowNum()+1; rowNumber++) {
+		for (int rowNumber = 2; rowNumber < sheet.getLastRowNum() + 1; rowNumber++) {
 			Row row = sheet.getRow(rowNumber);
 			for (int columnNumber = 1; columnNumber < row.getLastCellNum(); columnNumber++) {
 				Cell cell = row.getCell(columnNumber);
@@ -457,15 +457,14 @@ public class ConstraintsToJson {
 					if (cell == null || getCellValue(cell) == null || getCellValue(cell).toString().isEmpty()) {
 						modelDetailsList.get(columnNumber - 1)
 								.put(mappingKeys.get(Integer.toString(rowNumber - 2)).toString(), Integer.toString(0));
-					} else if(getCellValue(cell).toString().equals("NA")){
+					} else if (getCellValue(cell).toString().equals("NA")) {
+						modelDetailsList.get(columnNumber - 1)
+								.put(mappingKeys.get(Integer.toString(rowNumber - 2)).toString(), "N/A");
+					} else {
 						modelDetailsList.get(columnNumber - 1).put(
-								mappingKeys.get(Integer.toString(rowNumber - 2)).toString(), "N/A");
+								mappingKeys.get(Integer.toString(rowNumber - 2)).toString(),
+								getCellValue(cell).toString());
 					}
-					 else {
-							modelDetailsList.get(columnNumber - 1).put(
-									mappingKeys.get(Integer.toString(rowNumber - 2)).toString(),
-									getCellValue(cell).toString());
-						}
 				}
 			}
 		}
@@ -619,73 +618,76 @@ public class ConstraintsToJson {
 
 	public static String readUPSDetailsConstraintsExcel(Workbook workbook, int sheetNum) {
 		Sheet sheet = workbook.getSheetAt(sheetNum);
-		ArrayList<HashMap<String, String>> modelDetailsList1 = new ArrayList<HashMap<String, String>>();	
+		ArrayList<HashMap<String, String>> modelDetailsList1 = new ArrayList<HashMap<String, String>>();
 		ArrayList<HashMap<String, String>> modelDetailsList2 = new ArrayList<HashMap<String, String>>();
 		ArrayList<HashMap<String, String>> modelDetailsList3 = new ArrayList<HashMap<String, String>>();
-		
+
 		for (int rowNumber = 1; rowNumber < 13; rowNumber++) {
-			Row row = sheet.getRow(rowNumber);	
+			Row row = sheet.getRow(rowNumber);
 			for (int columnNumber = 1; columnNumber < row.getLastCellNum(); columnNumber++) {
 				Cell cell = row.getCell(columnNumber);
 				if (rowNumber == 1) {
 					HashMap<String, String> modelDetails = new HashMap<String, String>();
 					if (cell == null || getCellValue(cell) == null || getCellValue(cell).toString().isEmpty()) {
-						modelDetails.put(Integer.toString(rowNumber-1), Integer.toString(0));
+						modelDetails.put(Integer.toString(rowNumber - 1), Integer.toString(0));
 					} else {
-						modelDetails.put(Integer.toString(rowNumber-1), getCellValue(cell).toString());
+						modelDetails.put(Integer.toString(rowNumber - 1), getCellValue(cell).toString());
 					}
 					modelDetailsList1.add(modelDetails);
 				} else {
 					if (cell == null || getCellValue(cell) == null || getCellValue(cell).toString().isEmpty()) {
-						modelDetailsList1.get(columnNumber-1).put(Integer.toString(rowNumber-1), Integer.toString(0));
+						modelDetailsList1.get(columnNumber - 1).put(Integer.toString(rowNumber - 1),
+								Integer.toString(0));
 					} else {
-						modelDetailsList1.get(columnNumber-1).put(Integer.toString(rowNumber-1),
+						modelDetailsList1.get(columnNumber - 1).put(Integer.toString(rowNumber - 1),
 								getCellValue(cell).toString());
 					}
 				}
 			}
 		}
-		
+
 		for (int rowNumber = 15; rowNumber < 27; rowNumber++) {
-			Row row = sheet.getRow(rowNumber);	
+			Row row = sheet.getRow(rowNumber);
 			for (int columnNumber = 1; columnNumber < row.getLastCellNum(); columnNumber++) {
 				Cell cell = row.getCell(columnNumber);
 				if (rowNumber == 15) {
 					HashMap<String, String> modelDetails = new HashMap<String, String>();
 					if (cell == null || getCellValue(cell) == null || getCellValue(cell).toString().isEmpty()) {
-						modelDetails.put(Integer.toString(rowNumber-15), Integer.toString(0));
+						modelDetails.put(Integer.toString(rowNumber - 15), Integer.toString(0));
 					} else {
-						modelDetails.put(Integer.toString(rowNumber-15), getCellValue(cell).toString());
+						modelDetails.put(Integer.toString(rowNumber - 15), getCellValue(cell).toString());
 					}
 					modelDetailsList2.add(modelDetails);
 				} else {
 					if (cell == null || getCellValue(cell) == null || getCellValue(cell).toString().isEmpty()) {
-						modelDetailsList2.get(columnNumber-1).put(Integer.toString(rowNumber-15), Integer.toString(0));
+						modelDetailsList2.get(columnNumber - 1).put(Integer.toString(rowNumber - 15),
+								Integer.toString(0));
 					} else {
-						modelDetailsList2.get(columnNumber-1).put(Integer.toString(rowNumber-15),
+						modelDetailsList2.get(columnNumber - 1).put(Integer.toString(rowNumber - 15),
 								getCellValue(cell).toString());
 					}
 				}
 			}
 		}
-		
+
 		for (int rowNumber = 29; rowNumber < 41; rowNumber++) {
-			Row row = sheet.getRow(rowNumber);	
+			Row row = sheet.getRow(rowNumber);
 			for (int columnNumber = 1; columnNumber < row.getLastCellNum(); columnNumber++) {
 				Cell cell = row.getCell(columnNumber);
 				if (rowNumber == 29) {
 					HashMap<String, String> modelDetails = new HashMap<String, String>();
 					if (cell == null || getCellValue(cell) == null || getCellValue(cell).toString().isEmpty()) {
-						modelDetails.put(Integer.toString(rowNumber-29), Integer.toString(0));
+						modelDetails.put(Integer.toString(rowNumber - 29), Integer.toString(0));
 					} else {
-						modelDetails.put(Integer.toString(rowNumber-29), getCellValue(cell).toString());
+						modelDetails.put(Integer.toString(rowNumber - 29), getCellValue(cell).toString());
 					}
 					modelDetailsList3.add(modelDetails);
 				} else {
 					if (cell == null || getCellValue(cell) == null || getCellValue(cell).toString().isEmpty()) {
-						modelDetailsList3.get(columnNumber-1).put(Integer.toString(rowNumber-29), Integer.toString(0));
+						modelDetailsList3.get(columnNumber - 1).put(Integer.toString(rowNumber - 29),
+								Integer.toString(0));
 					} else {
-						modelDetailsList3.get(columnNumber-1).put(Integer.toString(rowNumber-29),
+						modelDetailsList3.get(columnNumber - 1).put(Integer.toString(rowNumber - 29),
 								getCellValue(cell).toString());
 					}
 				}
@@ -694,84 +696,78 @@ public class ConstraintsToJson {
 
 		ObjectMapper objectMapper = new ObjectMapper();
 		StringBuilder writeUp = new StringBuilder();
-		String finalJsonString1;		
+		String finalJsonString1;
 		try {
-			finalJsonString1 = objectMapper.writeValueAsString(modelDetailsList1);			
+			finalJsonString1 = objectMapper.writeValueAsString(modelDetailsList1);
 			writeUp.append("{\"SYMMETRA\" : {");
 			for (int i = 0; i < modelDetailsList1.size(); i++) {
 				String cellValue = modelDetailsList1.get(i).get("6").toString();
-				String familyForReport  = "SYM" + cellValue.substring(cellValue.indexOf("K")+1, cellValue.indexOf("H")+1);
+				String familyForReport = "SYM"
+						+ cellValue.substring(cellValue.indexOf("K") + 1, cellValue.indexOf("H") + 1);
 				writeUp.append("\"");
 				writeUp.append(modelDetailsList1.get(i).get("5"));
 				writeUp.append("\": {");
-				writeUp.append("\"family\": \"").append(modelDetailsList1.get(i).get("3"))
-				.append("\", \"sku\": \"").append(modelDetailsList1.get(i).get("6"))
-				.append("\", \"electricalPannel\": \"").append(modelDetailsList1.get(i).get("7"))
-				.append("\", \"width\": \"").append(modelDetailsList1.get(i).get("8"))
-				.append("\", \"depth\": \"").append(modelDetailsList1.get(i).get("9"))				
-				.append("\", \"layout\": \"").append(modelDetailsList1.get(i).get("10"))
-				.append("\", \"runtime\": \"").append("8")
-				.append("\", \"KVA\": \"").append(modelDetailsList1.get(i).get("2"))
-				.append("\", \"type\": \"").append(modelDetailsList1.get(i).get("11"))
-				.append("\", \"pwrFactor\": \"").append("1")
-				.append("\", \"familyForReport\": \"").append(familyForReport)
-				.append("\", \"upsDescription\": \"").append(modelDetailsList1.get(i).get("4")).append("\"");
-				if(i == (modelDetailsList1.size() - 1)){
+				writeUp.append("\"family\": \"").append(modelDetailsList1.get(i).get("3")).append("\", \"sku\": \"")
+						.append(modelDetailsList1.get(i).get("6")).append("\", \"electricalPannel\": \"")
+						.append(modelDetailsList1.get(i).get("7")).append("\", \"width\": \"")
+						.append(modelDetailsList1.get(i).get("8")).append("\", \"depth\": \"")
+						.append(modelDetailsList1.get(i).get("9")).append("\", \"layout\": \"")
+						.append(modelDetailsList1.get(i).get("10")).append("\", \"runtime\": \"").append("8")
+						.append("\", \"KVA\": \"").append(modelDetailsList1.get(i).get("2")).append("\", \"type\": \"")
+						.append(modelDetailsList1.get(i).get("11")).append("\", \"pwrFactor\": \"").append("1")
+						.append("\", \"familyForReport\": \"").append(familyForReport)
+						.append("\", \"upsDescription\": \"").append(modelDetailsList1.get(i).get("4")).append("\"");
+				if (i == (modelDetailsList1.size() - 1)) {
 					writeUp.append("}");
-				}
-				else {
+				} else {
 					writeUp.append("},");
-				}					
+				}
 			}
 			writeUp.append("}, ");
 			writeUp.append("\"GALAXY\" : {");
-			for (int i = 0; i < modelDetailsList2.size(); i++) {				
+			for (int i = 0; i < modelDetailsList2.size(); i++) {
 				writeUp.append("\"");
 				writeUp.append(modelDetailsList2.get(i).get("5"));
 				writeUp.append("\": {");
-				writeUp.append("\"family\": \"").append(modelDetailsList2.get(i).get("3"))
-				.append("\", \"sku\": \"").append(modelDetailsList2.get(i).get("6"))
-				.append("\", \"electricalPannel\": \"").append(modelDetailsList2.get(i).get("7"))
-				.append("\", \"width\": \"").append(modelDetailsList2.get(i).get("8"))
-				.append("\", \"depth\": \"").append(modelDetailsList2.get(i).get("9"))				
-				.append("\", \"layout\": \"").append(modelDetailsList2.get(i).get("10"))				
-				.append("\", \"KVA\": \"").append(modelDetailsList2.get(i).get("2"))
-				.append("\", \"runtime\": \"").append(modelDetailsList2.get(i).get("11"))
-				.append("\", \"pwrFactor\": \"").append("1")
-				.append("\", \"familyForReport\": \"").append(modelDetailsList2.get(i).get("3"))
-				.append("\", \"upsDescription\": \"").append(modelDetailsList2.get(i).get("4")).append("\"");
-				if(i == (modelDetailsList2.size() - 1)){
+				writeUp.append("\"family\": \"").append(modelDetailsList2.get(i).get("3")).append("\", \"sku\": \"")
+						.append(modelDetailsList2.get(i).get("6")).append("\", \"electricalPannel\": \"")
+						.append(modelDetailsList2.get(i).get("7")).append("\", \"width\": \"")
+						.append(modelDetailsList2.get(i).get("8")).append("\", \"depth\": \"")
+						.append(modelDetailsList2.get(i).get("9")).append("\", \"layout\": \"")
+						.append(modelDetailsList2.get(i).get("10")).append("\", \"KVA\": \"")
+						.append(modelDetailsList2.get(i).get("2")).append("\", \"runtime\": \"")
+						.append(modelDetailsList2.get(i).get("11")).append("\", \"pwrFactor\": \"").append("1")
+						.append("\", \"familyForReport\": \"").append(modelDetailsList2.get(i).get("3"))
+						.append("\", \"upsDescription\": \"").append(modelDetailsList2.get(i).get("4")).append("\"");
+				if (i == (modelDetailsList2.size() - 1)) {
 					writeUp.append("}");
-				}
-				else {
+				} else {
 					writeUp.append("},");
-				}					
+				}
 			}
 			writeUp.append("}, ");
 			writeUp.append("\"EASY UPS\" : {");
-			for (int i = 0; i < modelDetailsList3.size(); i++) {				
+			for (int i = 0; i < modelDetailsList3.size(); i++) {
 				writeUp.append("\"");
 				writeUp.append(modelDetailsList3.get(i).get("5"));
 				writeUp.append("\": {");
-				writeUp.append("\"family\": \"").append(modelDetailsList3.get(i).get("3"))
-				.append("\", \"sku\": \"").append(modelDetailsList3.get(i).get("6"))
-				.append("\", \"electricalPannel\": \"").append(modelDetailsList3.get(i).get("7"))
-				.append("\", \"width\": \"").append(modelDetailsList3.get(i).get("8"))
-				.append("\", \"depth\": \"").append(modelDetailsList3.get(i).get("9"))				
-				.append("\", \"layout\": \"").append(modelDetailsList3.get(i).get("10"))				
-				.append("\", \"KVA\": \"").append(modelDetailsList3.get(i).get("2"))
-				.append("\", \"runtime\": \"").append(modelDetailsList3.get(i).get("11"))
-				.append("\", \"pwrFactor\": \"").append("1")
-				.append("\", \"familyForReport\": \"").append("EASY UPS")
-				.append("\", \"upsDescription\": \"").append(modelDetailsList3.get(i).get("4")).append("\"");
-				if(i == (modelDetailsList3.size() - 1)){
+				writeUp.append("\"family\": \"").append(modelDetailsList3.get(i).get("3")).append("\", \"sku\": \"")
+						.append(modelDetailsList3.get(i).get("6")).append("\", \"electricalPannel\": \"")
+						.append(modelDetailsList3.get(i).get("7")).append("\", \"width\": \"")
+						.append(modelDetailsList3.get(i).get("8")).append("\", \"depth\": \"")
+						.append(modelDetailsList3.get(i).get("9")).append("\", \"layout\": \"")
+						.append(modelDetailsList3.get(i).get("10")).append("\", \"KVA\": \"")
+						.append(modelDetailsList3.get(i).get("2")).append("\", \"runtime\": \"")
+						.append(modelDetailsList3.get(i).get("11")).append("\", \"pwrFactor\": \"").append("1")
+						.append("\", \"familyForReport\": \"").append("EASY UPS").append("\", \"upsDescription\": \"")
+						.append(modelDetailsList3.get(i).get("4")).append("\"");
+				if (i == (modelDetailsList3.size() - 1)) {
 					writeUp.append("}");
-				}
-				else {
+				} else {
 					writeUp.append("},");
-				}								
+				}
 			}
-			writeUp.append("}}");	
+			writeUp.append("}}");
 			return writeUp.toString();
 		} catch (JsonProcessingException e) {
 			// TODO Auto-generated catch block
@@ -821,7 +817,8 @@ public class ConstraintsToJson {
 				Cell cell1 = row.getCell(0);
 				Cell cell2 = row.getCell(1);
 				Cell cell3 = row.getCell(2);
-				coolingType1 = getCellValue(cell1).toString() + '-' + getCellValue(cell2).toString() + getCellValue(cell3).toString();
+				coolingType1 = getCellValue(cell1).toString() + '-' + getCellValue(cell2).toString()
+						+ getCellValue(cell3).toString();
 				continue;
 			}
 			if (rowNumber == 1) {
@@ -866,7 +863,8 @@ public class ConstraintsToJson {
 				Cell cell1 = row.getCell(0);
 				Cell cell2 = row.getCell(1);
 				Cell cell3 = row.getCell(2);
-				coolingType2 = getCellValue(cell1).toString() + '-' + getCellValue(cell2).toString() +  getCellValue(cell3).toString();
+				coolingType2 = getCellValue(cell1).toString() + '-' + getCellValue(cell2).toString()
+						+ getCellValue(cell3).toString();
 				continue;
 			}
 			if (rowNumber == 8) {
@@ -922,6 +920,98 @@ public class ConstraintsToJson {
 			e.printStackTrace();
 		}
 		return "";
+	}
+
+	public static String getModuleCoolingType(String coolingType, String width, String coolingID) {
+		int coolinglength = 0;
+		String CoolingTypeValue = "";
+		if (coolingType.contains("INROW") && coolingType.contains("CW")) {
+			coolinglength =  Double.valueOf(width).intValue();
+			CoolingTypeValue = "Inrow CW " + coolinglength + "mm-" + coolingID;
+		} else if (coolingType.contains("INROW") && coolingType.contains("DX")) {
+			coolinglength = Double.valueOf(width).intValue();
+			CoolingTypeValue = "Inrow DX " + coolinglength + "mm-" + coolingID;
+		} else if (coolingType.contains("CRAC") && coolingType.contains("DX")) {
+			CoolingTypeValue = "CRAC DX " + coolingID;
+		} else if (coolingType.contains("CRAC") && coolingType.contains("CW")) {
+			CoolingTypeValue = "CRAC CW " + coolingID;
+		} else if (coolingType.contains("CRAH") && coolingType.contains("CW")) {
+			CoolingTypeValue = "CRAH CW-" + coolingID;
+		} else if (coolingType.contains("CRAH") && coolingType.contains("DX")) {
+			CoolingTypeValue = "CRAH DX-" + coolingID;
+		} else if (coolingType.contains("WALLMOUNT")) {
+			CoolingTypeValue = "Wall Mounted Down Flow" + coolingID;
+		} else if (coolingType.contains("UNISPLIT")) {
+			CoolingTypeValue = "Unisplit DX " + coolingID;
+		}
+		return CoolingTypeValue;
+	}
+
+	public static String readSingleModuleConstraintsExcel(Workbook workbook, int sheetNum) {
+		Sheet sheet = workbook.getSheetAt(sheetNum);
+		ArrayList<HashMap<String, String>> modelDetailsList = new ArrayList<HashMap<String, String>>();
+		JSONObject mappingKeys = (JSONObject) currentJSONKeys.get(workbook.getSheetName(sheetNum));
+		System.out.println(mappingKeys);
+
+		for (int rowNumber = 0; rowNumber < sheet.getLastRowNum() + 1; rowNumber++) {
+			Row row = sheet.getRow(rowNumber);
+			for (int columnNumber = 0; columnNumber < row.getLastCellNum(); columnNumber++) {
+				Cell cell = row.getCell(columnNumber);
+				if (rowNumber == 0) {
+					HashMap<String, String> modelDetails = new HashMap<String, String>();
+					if (cell == null || getCellValue(cell) == null || getCellValue(cell).toString().isEmpty()) {
+						modelDetails.put(Integer.toString(rowNumber), Integer.toString(0));
+					} else {
+						modelDetails.put(Integer.toString(rowNumber), getCellValue(cell).toString());
+					}
+					modelDetailsList.add(modelDetails);
+				} else {
+					if (cell == null || getCellValue(cell) == null || getCellValue(cell).toString().isEmpty()) {
+						modelDetailsList.get(columnNumber).put(Integer.toString(rowNumber), Integer.toString(0));
+					} else {
+						modelDetailsList.get(columnNumber).put(Integer.toString(rowNumber),
+								getCellValue(cell).toString());
+					}
+				}
+			}
+		}		
+		
+		StringBuilder writeUpData = new StringBuilder();
+		writeUpData.append("[");
+		for (int i = 0; i < modelDetailsList.size(); i++) {
+			String coolingType = modelDetailsList.get(i).get("1");
+			String coolingID =  modelDetailsList.get(i).get("0");
+			String width =  modelDetailsList.get(i).get("3");
+			String coolingTypeValue = getModuleCoolingType(coolingType, width, coolingID);		
+			if (!coolingTypeValue.equals("")) {
+				writeUpData.append("{");
+				writeUpData.append("\"coolingType\" :\"");
+				writeUpData.append(coolingTypeValue);
+				writeUpData.append("\", ");
+				writeUpData.append("\"coolingModel\" :\"");
+				writeUpData.append(modelDetailsList.get(i).get("0"));
+				writeUpData.append("\", ");
+				writeUpData.append("\"Id\" :\"");
+				writeUpData.append(modelDetailsList.get(i).get("1"));
+				writeUpData.append("\", ");
+				writeUpData.append("\"key\" :\"");
+				writeUpData.append(Double.valueOf(modelDetailsList.get(i).get("2").toString()).intValue());
+				writeUpData.append("\", ");
+				writeUpData.append("\"width\" :\"");
+				writeUpData.append(Double.valueOf(modelDetailsList.get(i).get("3").toString()).intValue());
+				writeUpData.append("\", ");
+				writeUpData.append("\"pwr\" :\"");
+				writeUpData.append(modelDetailsList.get(i).get("4"));	
+				if(i == (modelDetailsList.size()-1)) {
+					writeUpData.append("\"}");
+				}else {
+					writeUpData.append("\"},");
+				}
+			}
+			
+		}		
+		writeUpData.append("]");
+		return writeUpData.toString();		
 	}
 
 }
