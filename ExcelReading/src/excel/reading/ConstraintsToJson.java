@@ -439,7 +439,7 @@ public class ConstraintsToJson {
 		JSONObject mappingKeys = (JSONObject) currentJSONKeys.get(workbook.getSheetName(sheetNum));
 		System.out.println(mappingKeys);
 
-		for (int rowNumber = 2; rowNumber < sheet.getLastRowNum(); rowNumber++) {
+		for (int rowNumber = 2; rowNumber < sheet.getLastRowNum()+1; rowNumber++) {
 			Row row = sheet.getRow(rowNumber);
 			for (int columnNumber = 1; columnNumber < row.getLastCellNum(); columnNumber++) {
 				Cell cell = row.getCell(columnNumber);
@@ -457,11 +457,15 @@ public class ConstraintsToJson {
 					if (cell == null || getCellValue(cell) == null || getCellValue(cell).toString().isEmpty()) {
 						modelDetailsList.get(columnNumber - 1)
 								.put(mappingKeys.get(Integer.toString(rowNumber - 2)).toString(), Integer.toString(0));
-					} else {
+					} else if(getCellValue(cell).toString().equals("NA")){
 						modelDetailsList.get(columnNumber - 1).put(
-								mappingKeys.get(Integer.toString(rowNumber - 2)).toString(),
-								getCellValue(cell).toString());
+								mappingKeys.get(Integer.toString(rowNumber - 2)).toString(), "N/A");
 					}
+					 else {
+							modelDetailsList.get(columnNumber - 1).put(
+									mappingKeys.get(Integer.toString(rowNumber - 2)).toString(),
+									getCellValue(cell).toString());
+						}
 				}
 			}
 		}
@@ -816,7 +820,8 @@ public class ConstraintsToJson {
 			if (rowNumber == 0) {
 				Cell cell1 = row.getCell(0);
 				Cell cell2 = row.getCell(1);
-				coolingType1 = getCellValue(cell1).toString() + '-' + getCellValue(cell2).toString();
+				Cell cell3 = row.getCell(2);
+				coolingType1 = getCellValue(cell1).toString() + '-' + getCellValue(cell2).toString() + getCellValue(cell3).toString();
 				continue;
 			}
 			if (rowNumber == 1) {
@@ -860,7 +865,8 @@ public class ConstraintsToJson {
 			if (rowNumber == 7) {
 				Cell cell1 = row.getCell(0);
 				Cell cell2 = row.getCell(1);
-				coolingType2 = getCellValue(cell1).toString() + '-' + getCellValue(cell2).toString();
+				Cell cell3 = row.getCell(2);
+				coolingType2 = getCellValue(cell1).toString() + '-' + getCellValue(cell2).toString() +  getCellValue(cell3).toString();
 				continue;
 			}
 			if (rowNumber == 8) {
