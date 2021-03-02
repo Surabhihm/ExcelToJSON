@@ -126,6 +126,32 @@ public class ConstraintsToJson {
 		Sheet sheet = workbook.getSheetAt(sheetNum);
 		Map<String, List<CoolingStructureMap>> uPSCoolingStructureMap = new HashMap<String, List<CoolingStructureMap>>();
 		List<String> coolingTypesList = new ArrayList<String>();
+		List<String> coolingIDList = new ArrayList<String>();
+		
+	
+		
+		List<String> enclosureList = new ArrayList<String>();
+		
+		enclosureList.add("20' ISO");
+		enclosureList.add("40' ISO");
+		enclosureList.add("25' NON ISO");
+		enclosureList.add("45' NON ISO");
+		enclosureList.add("45' DUAL BAY");
+		
+		List<EnclosureCoolingStrcture> enclosureCoolingStrctureList = new ArrayList<EnclosureCoolingStrcture>();
+		
+		for(int k =0 ; k < enclosureList.size() ; k++)
+		{
+			EnclosureCoolingStrcture enclosureCoolingStrcture = new EnclosureCoolingStrcture();
+			enclosureCoolingStrcture.containerType = enclosureList.get(k);
+			enclosureCoolingStrcture.coolingDetailsList = new ArrayList<CoolingDetails>();
+			enclosureCoolingStrctureList.add(enclosureCoolingStrcture);
+		}
+
+		
+		
+		
+		
 		for (Row row : sheet) {
 
 			if (row.getCell(0) != null && !getCellValue(row.getCell(0)).toString().equals("")
@@ -157,6 +183,21 @@ public class ConstraintsToJson {
 
 				if (!CoolingTypeValue.equals("")) {
 					coolingTypesList.add(new String(CoolingTypeValue));
+					coolingIDList.add(coolingID);
+				}
+				
+				for(int j = 0 ; j < enclosureCoolingStrctureList.size() ; j++)
+				{
+					List<CoolingDetails> contList = enclosureCoolingStrctureList.get(j).getCoolingDetails();
+					CoolingDetails coolingDetails = new CoolingDetails();
+					coolingDetails.setCoolingID(coolingID);
+					coolingDetails.setCoolingType(new String(CoolingTypeValue));
+					coolingDetails.setType("");
+					Double itLoad = Double.valueOf(getCellValue(row.getCell(5+j)).toString());
+					coolingDetails.setItLoad(itLoad);
+					contList.add(coolingDetails);
+					
+					
 				}
 
 			}
@@ -195,7 +236,7 @@ public class ConstraintsToJson {
 
 					// Common hardcoded values go here..
 					structureDetails.setStructureValue(0);
-					structureDetails.setItLoad(0);
+					// structureDetails.setItLoad(0);
 					structureDetails.setMinimumServiceLength(0);
 					structureDetails.setElectricalPanel(0);
 
@@ -204,23 +245,19 @@ public class ConstraintsToJson {
 						structureDetails.setLength(Double.valueOf(getCellValue(row.getCell(cellNumber)).toString()));
 						structureDetails.setType(getCellValue(row.getCell(0)).toString());
 						structureDetails.setBayType("Dual");
-						if (!CoolingStructureMap.coolingType.contains("CRA")) {
-							int newCell1 = cellNumber + (coolingTypesList.size() - cellNumber)
-									+ (coolingTypesList.size() - 2) + 1;
-							structureDetails.setValue(row.getCell(newCell1) == null ? 0.0
-									: Double.valueOf(getCellValue(row.getCell(cellNumber + coolingTypesList.size()))
-											.toString()));
-
-						} else {
-							structureDetails.setValue(0);
-							int newCell1 = cellNumber + (coolingTypesList.size() + 4 - cellNumber)
-									+ (coolingTypesList.size() - 2) + 2;
-							int newCell2 = cellNumber + (coolingTypesList.size() + 4 - cellNumber)
-									+ (coolingTypesList.size() - 2) + 4;
-							structureDetails.setMinimumServiceLength(
-									Double.valueOf(getCellValue(row.getCell(newCell1)).toString()));
-							structureDetails
-									.setElectricalPanel(Double.valueOf(getCellValue(row.getCell(newCell2)).toString()));
+						if(!CoolingStructureMap.coolingType.contains("CRA"))
+						{
+							int newCell1 =  cellNumber + (coolingTypesList.size() - cellNumber)  + (coolingTypesList.size() - 2) + 1 ;
+							structureDetails.setValue(row.getCell(newCell1) == null  ? 0.0 :  Double.valueOf(getCellValue(row.getCell(cellNumber + coolingTypesList.size())).toString()));
+							
+						}
+						else
+						{
+						structureDetails.setValue(0);	
+						int newCell1 =  cellNumber + (coolingTypesList.size() + 4 - cellNumber)  + (coolingTypesList.size() - 2) + 2 ;
+						int newCell2 =  cellNumber + (coolingTypesList.size() + 4 - cellNumber)  + (coolingTypesList.size() - 2) + 4;
+						structureDetails.setMinimumServiceLength(Double.valueOf(getCellValue(row.getCell(newCell1)).toString()) );
+						structureDetails.setElectricalPanel(Double.valueOf(getCellValue(row.getCell(newCell2)).toString()) );
 						}
 						cellNumber++;
 
@@ -231,9 +268,7 @@ public class ConstraintsToJson {
 							structureDetails.setType(getCellValue(row.getCell(0)).toString());
 							structureDetails.setBayType("Single");
 							int newCell = cellNumber + coolingTypesList.size();
-							structureDetails.setValue(row.getCell(newCell) == null ? 0.0
-									: Double.valueOf(getCellValue(row.getCell(cellNumber + coolingTypesList.size()))
-											.toString()));
+							structureDetails.setValue(row.getCell(newCell) == null  ? 0.0 :  Double.valueOf(getCellValue(row.getCell(cellNumber + coolingTypesList.size())).toString()));
 							cellNumber++;
 						} else {
 
@@ -286,12 +321,12 @@ public class ConstraintsToJson {
 							.append(" \"value\" : ").append(structureDetails.getValue()).append(" ,")
 							.append(" \"structureType\" : \"").append(structureDetails.getStructureType())
 							.append("\" ,").append(" \"structureValue\" : ")
-							.append(structureDetails.getStructureValue()).append(" ,").append(" \"dehumidifier\" : ")
-							.append(structureDetails.getDehumidifier()).append(" ,")
+							.append(structureDetails.getStructureValue()).append(" ,")
+							.append(" \"dehumidifier\" : ").append(structureDetails.getDehumidifier()).append(" ,")
 							.append(" \"minimumServiceLength\" : ").append(structureDetails.getMinimumServiceLength())
 							.append(" ,").append(" \"electricalPanel\" : ")
-							.append(structureDetails.getElectricalPanel()).append(" ,").append(" \"itLoad\" : ")
-							.append(structureDetails.getItLoad()).append(" },");
+							.append(structureDetails.getElectricalPanel()).append(" ,")
+							.append(" },");
 
 				}
 				writeUpRack.append("]},");
@@ -301,10 +336,63 @@ public class ConstraintsToJson {
 		}
 
 		writeUpRack.append("]");
+		
+		System.out.print(enclosureCoolingStrctureList);
+		
+		performWriteUpForEnclosureCooling(enclosureCoolingStrctureList );
+		
 
 		return writeUpRack.toString();
 
 	}
+	
+	private void performWriteUpForEnclosureCooling(List<EnclosureCoolingStrcture> enclosureCoolingStrctureList) {
+		
+		StringBuilder writeUpEnclosureCooling = new StringBuilder();
+		
+		writeUpEnclosureCooling.append("[");
+		for(int m = 0 ; m < enclosureCoolingStrctureList.size() ; m++)
+		{
+			writeUpEnclosureCooling.append("{");
+			writeUpEnclosureCooling.append("\"containerType\": \"").append(enclosureCoolingStrctureList.get(m).getContainerType()).append("\",");
+			List<CoolingDetails> coolDetailList = enclosureCoolingStrctureList.get(m).getCoolingDetails();
+			writeUpEnclosureCooling.append("\"coolingDetails\" : [");
+			for(int n = 0 ; n < coolDetailList.size() ; n++)
+			{
+				writeUpEnclosureCooling.append("{");
+				writeUpEnclosureCooling.append("\"coolingType\": \"").append(coolDetailList.get(n).getCoolingType()).append("\",");
+				writeUpEnclosureCooling.append("\"Id\": \"").append(coolDetailList.get(n).getCoolingID()).append("\",");
+				writeUpEnclosureCooling.append("\"type\": \"").append(coolDetailList.get(n).getType()).append("\",");
+				writeUpEnclosureCooling.append("\"itLoad\": \"").append(coolDetailList.get(n).getItLoad()).append("\"");
+				writeUpEnclosureCooling.append("},");
+			}
+			writeUpEnclosureCooling.append("]");
+			writeUpEnclosureCooling.append("},");
+		}
+		writeUpEnclosureCooling.append("]");
+		
+		ObjectMapper mapper = new ObjectMapper();
+		String targetFile = filePath + "\\outputResources\\" + "enclosureCooling"
+		+ "ConstraintsJson.txt";
+		try {
+			mapper.writerWithDefaultPrettyPrinter().writeValue(new File(targetFile), writeUpEnclosureCooling.toString());
+		} catch (JsonGenerationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JsonMappingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		// TODO Auto-generated method stub
+		
+	}
+
+	
 
 	private static Object getCellValue(Cell cell) {
 		Object cellValue = null;
