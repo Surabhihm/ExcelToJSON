@@ -790,18 +790,24 @@ public class ConstraintsToJson {
 			modelDetails.put("quantity", getCellValue(cell2).toString());
 			modelDetailsList.add(modelDetails);
 		}
-		ObjectMapper objectMapper = new ObjectMapper();
-		String finalJsonString;
 
-		try {
-			finalJsonString = objectMapper.writeValueAsString(modelDetailsList);
-			System.out.println(finalJsonString);
-			return finalJsonString;
-		} catch (JsonProcessingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		StringBuilder writeUpData = new StringBuilder();
+		writeUpData.append("[");
+		for (int i = 0; i < modelDetailsList.size(); i++) {
+			writeUpData.append("{");
+			writeUpData.append("\"ErvandArs\" :\"");
+			writeUpData.append(modelDetailsList.get(i).get("ErvandArs").toString());
+			writeUpData.append("\", ");
+			writeUpData.append("\"quantity\" : ");
+			writeUpData.append(Double.valueOf(modelDetailsList.get(i).get("quantity").toString()).intValue());
+			if (i == (modelDetailsList.size() - 1)) {
+				writeUpData.append("}");
+			} else {
+				writeUpData.append("},");
+			}
 		}
-		return "";
+		writeUpData.append("]");
+		return writeUpData.toString();
 	}
 
 	public static String readCRACoolingTypeConstraintsExcel(Workbook workbook, int sheetNum) {
@@ -927,7 +933,7 @@ public class ConstraintsToJson {
 		int coolinglength = 0;
 		String CoolingTypeValue = "";
 		if (coolingType.contains("INROW") && coolingType.contains("CW")) {
-			coolinglength =  Double.valueOf(width).intValue();
+			coolinglength = Double.valueOf(width).intValue();
 			CoolingTypeValue = "InRow CW " + coolinglength + "mm-" + coolingID;
 		} else if (coolingType.contains("INROW") && coolingType.contains("DX")) {
 			coolinglength = Double.valueOf(width).intValue();
@@ -975,16 +981,15 @@ public class ConstraintsToJson {
 					}
 				}
 			}
-		}		
-		
-		
+		}
+
 		StringBuilder writeUpData = new StringBuilder();
 		writeUpData.append("[");
 		for (int i = 0; i < modelDetailsList.size(); i++) {
 			String coolingType = modelDetailsList.get(i).get("1");
-			String coolingID =  modelDetailsList.get(i).get("0");
-			String width =  modelDetailsList.get(i).get("3");
-			String coolingTypeValue = getModuleCoolingType(coolingType, width, coolingID);		
+			String coolingID = modelDetailsList.get(i).get("0");
+			String width = modelDetailsList.get(i).get("3");
+			String coolingTypeValue = getModuleCoolingType(coolingType, width, coolingID);
 			if (!coolingTypeValue.equals("")) {
 				writeUpData.append("{");
 				writeUpData.append("\"coolingType\" :\"");
@@ -1000,30 +1005,30 @@ public class ConstraintsToJson {
 				writeUpData.append(Double.valueOf(modelDetailsList.get(i).get("2").toString()).intValue());
 				writeUpData.append(", ");
 				writeUpData.append("\"width\" : ");
-				if(Double.valueOf(modelDetailsList.get(i).get("3").toString()).intValue() == 0) {
+				if (Double.valueOf(modelDetailsList.get(i).get("3").toString()).intValue() == 0) {
 					writeUpData.append(0);
+				} else {
+					writeUpData
+							.append(String.format("%.2f", Double.valueOf(modelDetailsList.get(i).get("3").toString())));
 				}
-				else {
-					writeUpData.append(String.format("%.2f", Double.valueOf(modelDetailsList.get(i).get("3").toString())));
-				}				
 				writeUpData.append(", ");
 				writeUpData.append("\"pwr\" : ");
-				if(Double.valueOf(modelDetailsList.get(i).get("4").toString()).intValue() == 0) {
+				if (Double.valueOf(modelDetailsList.get(i).get("4").toString()).intValue() == 0) {
 					writeUpData.append(0);
+				} else {
+					writeUpData
+							.append(String.format("%.2f", Double.valueOf(modelDetailsList.get(i).get("4").toString())));
 				}
-				else {
-					writeUpData.append(String.format("%.2f", Double.valueOf(modelDetailsList.get(i).get("4").toString())));
-				}				
-				if(i == (modelDetailsList.size()-1)) {
+				if (i == (modelDetailsList.size() - 1)) {
 					writeUpData.append("}");
-				}else {
+				} else {
 					writeUpData.append("},");
 				}
 			}
-			
-		}		
+
+		}
 		writeUpData.append("]");
-		return writeUpData.toString();		
+		return writeUpData.toString();
 	}
 
 }
