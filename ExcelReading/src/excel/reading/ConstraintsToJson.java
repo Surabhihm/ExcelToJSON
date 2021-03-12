@@ -3,6 +3,7 @@ package excel.reading;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -927,12 +928,12 @@ public class ConstraintsToJson {
 		String CoolingTypeValue = "";
 		if (coolingType.contains("INROW") && coolingType.contains("CW")) {
 			coolinglength =  Double.valueOf(width).intValue();
-			CoolingTypeValue = "Inrow CW " + coolinglength + "mm-" + coolingID;
+			CoolingTypeValue = "InRow CW " + coolinglength + "mm-" + coolingID;
 		} else if (coolingType.contains("INROW") && coolingType.contains("DX")) {
 			coolinglength = Double.valueOf(width).intValue();
-			CoolingTypeValue = "Inrow DX " + coolinglength + "mm-" + coolingID;
+			CoolingTypeValue = "InRow DX " + coolinglength + "mm-" + coolingID;
 		} else if (coolingType.contains("CRAC") && coolingType.contains("DX")) {
-			CoolingTypeValue = "CRAC DX " + coolingID;
+			CoolingTypeValue = "CRAC DX-" + coolingID;
 		} else if (coolingType.contains("CRAC") && coolingType.contains("CW")) {
 			CoolingTypeValue = "CRAC CW " + coolingID;
 		} else if (coolingType.contains("CRAH") && coolingType.contains("CW")) {
@@ -940,9 +941,9 @@ public class ConstraintsToJson {
 		} else if (coolingType.contains("CRAH") && coolingType.contains("DX")) {
 			CoolingTypeValue = "CRAH DX-" + coolingID;
 		} else if (coolingType.contains("WALLMOUNT")) {
-			CoolingTypeValue = "Wall Mounted Down Flow" + coolingID;
+			CoolingTypeValue = "Wall Mounted Down Flow-" + coolingID;
 		} else if (coolingType.contains("UNISPLIT")) {
-			CoolingTypeValue = "Unisplit DX " + coolingID;
+			CoolingTypeValue = "Unisplit DX-" + coolingID;
 		}
 		return CoolingTypeValue;
 	}
@@ -976,6 +977,7 @@ public class ConstraintsToJson {
 			}
 		}		
 		
+		
 		StringBuilder writeUpData = new StringBuilder();
 		writeUpData.append("[");
 		for (int i = 0; i < modelDetailsList.size(); i++) {
@@ -994,18 +996,28 @@ public class ConstraintsToJson {
 				writeUpData.append("\"Id\" :\"");
 				writeUpData.append(modelDetailsList.get(i).get("1"));
 				writeUpData.append("\", ");
-				writeUpData.append("\"key\" :\"");
+				writeUpData.append("\"key\" : ");
 				writeUpData.append(Double.valueOf(modelDetailsList.get(i).get("2").toString()).intValue());
-				writeUpData.append("\", ");
-				writeUpData.append("\"width\" :\"");
-				writeUpData.append(Double.valueOf(modelDetailsList.get(i).get("3").toString()).intValue());
-				writeUpData.append("\", ");
-				writeUpData.append("\"pwr\" :\"");
-				writeUpData.append(modelDetailsList.get(i).get("4"));	
+				writeUpData.append(", ");
+				writeUpData.append("\"width\" : ");
+				if(Double.valueOf(modelDetailsList.get(i).get("3").toString()).intValue() == 0) {
+					writeUpData.append(0);
+				}
+				else {
+					writeUpData.append(String.format("%.2f", Double.valueOf(modelDetailsList.get(i).get("3").toString())));
+				}				
+				writeUpData.append(", ");
+				writeUpData.append("\"pwr\" : ");
+				if(Double.valueOf(modelDetailsList.get(i).get("4").toString()).intValue() == 0) {
+					writeUpData.append(0);
+				}
+				else {
+					writeUpData.append(String.format("%.2f", Double.valueOf(modelDetailsList.get(i).get("4").toString())));
+				}				
 				if(i == (modelDetailsList.size()-1)) {
-					writeUpData.append("\"}");
+					writeUpData.append("}");
 				}else {
-					writeUpData.append("\"},");
+					writeUpData.append("},");
 				}
 			}
 			
