@@ -470,17 +470,40 @@ public class ConstraintsToJson {
 			}
 		}
 
-		ObjectMapper objectMapper = new ObjectMapper();
-		String finalJsonString;
-		try {
-			finalJsonString = objectMapper.writeValueAsString(modelDetailsList);
-			System.out.println(finalJsonString);
-			return finalJsonString;
-		} catch (JsonProcessingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		StringBuilder writeUpData = new StringBuilder();
+		writeUpData.append("[");
+		for (int i = 0; i < modelDetailsList.size(); i++) {
+			writeUpData.append("{");
+			writeUpData.append("\"").append(mappingKeys.get("0")).append("\" : ");
+			writeUpData.append(Double.valueOf(modelDetailsList.get(i).get(mappingKeys.get("0")).toString()).intValue());
+			writeUpData.append(", ");
+			writeUpData.append("\"").append(mappingKeys.get("1")).append("\" : ");
+			writeUpData.append(Double.valueOf(modelDetailsList.get(i).get(mappingKeys.get("1")).toString()).intValue());
+			writeUpData.append(", ");
+			writeUpData.append("\"").append(mappingKeys.get("2"));
+			if(modelDetailsList.get(i).get(mappingKeys.get("2")).toString() == "N/A") {
+				writeUpData.append("\" : \"");
+				writeUpData.append(modelDetailsList.get(i).get(mappingKeys.get("2")).toString());
+				if (i == (modelDetailsList.size() - 1)) {
+					writeUpData.append("\"}");
+				} else {
+					writeUpData.append("\"},");
+				}
+			}
+			else {
+				writeUpData.append("\" : ");
+				writeUpData.append(Double.valueOf(modelDetailsList.get(i).get(mappingKeys.get("2")).toString()).intValue());
+				if (i == (modelDetailsList.size() - 1)) {
+					writeUpData.append("}");
+				} else {
+					writeUpData.append("},");
+				}
+			}
+			
+			
 		}
-		return "";
+		writeUpData.append("]");
+		return writeUpData.toString();
 	}
 
 	public static String readRackConstraintsExcel(Workbook workbook, int sheetNum) {
