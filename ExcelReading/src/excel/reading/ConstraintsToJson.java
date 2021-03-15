@@ -718,6 +718,7 @@ public class ConstraintsToJson {
 			}
 		}
 
+		DecimalFormat Format = new DecimalFormat("0.#");
 		ObjectMapper objectMapper = new ObjectMapper();
 		StringBuilder writeUp = new StringBuilder();
 		String finalJsonString1;
@@ -732,14 +733,14 @@ public class ConstraintsToJson {
 				writeUp.append(modelDetailsList1.get(i).get("5"));
 				writeUp.append("\": {");
 				writeUp.append("\"family\": \"").append(modelDetailsList1.get(i).get("3")).append("\", \"sku\": \"")
-						.append(modelDetailsList1.get(i).get("6")).append("\", \"electricalPannel\": \"")
-						.append(modelDetailsList1.get(i).get("7")).append("\", \"width\": \"")
-						.append(modelDetailsList1.get(i).get("8")).append("\", \"depth\": \"")
-						.append(modelDetailsList1.get(i).get("9")).append("\", \"layout\": \"")
-						.append(modelDetailsList1.get(i).get("10")).append("\", \"runtime\": \"").append("8")
-						.append("\", \"KVA\": \"").append(modelDetailsList1.get(i).get("2")).append("\", \"type\": \"")
-						.append(modelDetailsList1.get(i).get("11")).append("\", \"pwrFactor\": \"").append("1")
-						.append("\", \"familyForReport\": \"").append(familyForReport)
+						.append(modelDetailsList1.get(i).get("6")).append("\", \"electricalPannel\": ")
+						.append(Double.valueOf(modelDetailsList1.get(i).get("7")).intValue()).append(", \"width\": ")
+						.append(Double.valueOf(modelDetailsList1.get(i).get("8")).intValue()).append(", \"depth\": ")
+						.append(Double.valueOf(modelDetailsList1.get(i).get("9")).intValue()).append(", \"layout\": ")
+						.append(Double.valueOf(modelDetailsList1.get(i).get("10")).intValue()).append(", \"runtime\": ").append("8")
+						.append(", \"KVA\": ").append(Double.valueOf(modelDetailsList1.get(i).get("2")).intValue()).append(", \"type\": \"")
+						.append(modelDetailsList1.get(i).get("11")).append("\", \"pwrFactor\": ").append("1")
+						.append(", \"familyForReport\": \"").append(familyForReport)
 						.append("\", \"upsDescription\": \"").append(modelDetailsList1.get(i).get("4")).append("\"");
 				if (i == (modelDetailsList1.size() - 1)) {
 					writeUp.append("}");
@@ -754,14 +755,14 @@ public class ConstraintsToJson {
 				writeUp.append(modelDetailsList2.get(i).get("5"));
 				writeUp.append("\": {");
 				writeUp.append("\"family\": \"").append(modelDetailsList2.get(i).get("3")).append("\", \"sku\": \"")
-						.append(modelDetailsList2.get(i).get("6")).append("\", \"electricalPannel\": \"")
-						.append(modelDetailsList2.get(i).get("7")).append("\", \"width\": \"")
-						.append(modelDetailsList2.get(i).get("8")).append("\", \"depth\": \"")
-						.append(modelDetailsList2.get(i).get("9")).append("\", \"layout\": \"")
-						.append(modelDetailsList2.get(i).get("10")).append("\", \"KVA\": \"")
-						.append(modelDetailsList2.get(i).get("2")).append("\", \"runtime\": \"")
-						.append(modelDetailsList2.get(i).get("11")).append("\", \"pwrFactor\": \"").append("1")
-						.append("\", \"familyForReport\": \"").append(modelDetailsList2.get(i).get("3"))
+						.append(modelDetailsList2.get(i).get("6")).append("\", \"electricalPannel\": ")
+						.append(Double.valueOf(modelDetailsList2.get(i).get("7")).intValue()).append(", \"width\": ")
+						.append(Double.valueOf(modelDetailsList2.get(i).get("8")).intValue()).append(", \"depth\": ")
+						.append(Double.valueOf(modelDetailsList2.get(i).get("9")).intValue()).append(", \"layout\": ")
+						.append(Double.valueOf(modelDetailsList2.get(i).get("10")).intValue()).append(", \"KVA\": ")
+						.append(Double.valueOf(modelDetailsList2.get(i).get("2")).intValue()).append(", \"runtime\": ")
+						.append(modelDetailsList2.get(i).get("11")).append(", \"pwrFactor\": ").append("1")
+						.append(", \"familyForReport\": \"").append(modelDetailsList2.get(i).get("3"))
 						.append("\", \"upsDescription\": \"").append(modelDetailsList2.get(i).get("4")).append("\"");
 				if (i == (modelDetailsList2.size() - 1)) {
 					writeUp.append("}");
@@ -776,14 +777,14 @@ public class ConstraintsToJson {
 				writeUp.append(modelDetailsList3.get(i).get("5"));
 				writeUp.append("\": {");
 				writeUp.append("\"family\": \"").append(modelDetailsList3.get(i).get("3")).append("\", \"sku\": \"")
-						.append(modelDetailsList3.get(i).get("6")).append("\", \"electricalPannel\": \"")
-						.append(modelDetailsList3.get(i).get("7")).append("\", \"width\": \"")
-						.append(modelDetailsList3.get(i).get("8")).append("\", \"depth\": \"")
-						.append(modelDetailsList3.get(i).get("9")).append("\", \"layout\": \"")
-						.append(modelDetailsList3.get(i).get("10")).append("\", \"KVA\": \"")
-						.append(modelDetailsList3.get(i).get("2")).append("\", \"runtime\": \"")
-						.append(modelDetailsList3.get(i).get("11")).append("\", \"pwrFactor\": \"").append("1")
-						.append("\", \"familyForReport\": \"").append("EASY UPS").append("\", \"upsDescription\": \"")
+						.append(modelDetailsList3.get(i).get("6")).append("\", \"electricalPannel\": ")
+						.append(Double.valueOf(modelDetailsList3.get(i).get("7")).intValue()).append(", \"width\": ")
+						.append(Double.valueOf(modelDetailsList3.get(i).get("8")).intValue()).append(", \"depth\": ")
+						.append(Double.valueOf(modelDetailsList3.get(i).get("9")).intValue()).append(", \"layout\": ")
+						.append(Double.valueOf(modelDetailsList3.get(i).get("10")).intValue()).append(", \"KVA\": ")
+						.append(Double.valueOf(modelDetailsList3.get(i).get("2")).intValue()).append(", \"runtime\": ")
+						.append(modelDetailsList3.get(i).get("11")).append(", \"pwrFactor\": ").append("1")
+						.append(", \"familyForReport\": \"").append("EASY UPS").append("\", \"upsDescription\": \"")
 						.append(modelDetailsList3.get(i).get("4")).append("\"");
 				if (i == (modelDetailsList3.size() - 1)) {
 					writeUp.append("}");
