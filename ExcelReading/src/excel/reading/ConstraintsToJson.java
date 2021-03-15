@@ -5,7 +5,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -14,7 +13,6 @@ import java.util.Map;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -727,6 +725,7 @@ public class ConstraintsToJson {
 			writeUp.append("{\"SYMMETRA\" : {");
 			for (int i = 0; i < modelDetailsList1.size(); i++) {
 				String cellValue = modelDetailsList1.get(i).get("6").toString();
+				Double pwrFactor = Double.valueOf(modelDetailsList1.get(i).get("1")) / Double.valueOf(modelDetailsList1.get(i).get("2")); // pwrFactor = KW/KVA
 				String familyForReport = "SYM"
 						+ cellValue.substring(cellValue.indexOf("K") + 1, cellValue.indexOf("H") + 1);
 				writeUp.append("\"");
@@ -737,9 +736,9 @@ public class ConstraintsToJson {
 						.append(Double.valueOf(modelDetailsList1.get(i).get("7")).intValue()).append(", \"width\": ")
 						.append(Double.valueOf(modelDetailsList1.get(i).get("8")).intValue()).append(", \"depth\": ")
 						.append(Double.valueOf(modelDetailsList1.get(i).get("9")).intValue()).append(", \"layout\": ")
-						.append(Double.valueOf(modelDetailsList1.get(i).get("10")).intValue()).append(", \"runtime\": ").append("8")
+						.append(Double.valueOf(modelDetailsList1.get(i).get("10")).intValue())
 						.append(", \"KVA\": ").append(Double.valueOf(modelDetailsList1.get(i).get("2")).intValue()).append(", \"type\": \"")
-						.append(modelDetailsList1.get(i).get("11")).append("\", \"pwrFactor\": ").append("1")
+						.append(modelDetailsList1.get(i).get("11")).append("\", \"pwrFactor\": ").append(pwrFactor)
 						.append(", \"familyForReport\": \"").append(familyForReport)
 						.append("\", \"upsDescription\": \"").append(modelDetailsList1.get(i).get("4")).append("\"");
 				if (i == (modelDetailsList1.size() - 1)) {
@@ -751,6 +750,7 @@ public class ConstraintsToJson {
 			writeUp.append("}, ");
 			writeUp.append("\"GALAXY\" : {");
 			for (int i = 0; i < modelDetailsList2.size(); i++) {
+				Double pwrFactor = Double.valueOf(modelDetailsList2.get(i).get("1")) / Double.valueOf(modelDetailsList2.get(i).get("2")); // pwrFactor = KW/KVA
 				writeUp.append("\"");
 				writeUp.append(modelDetailsList2.get(i).get("5"));
 				writeUp.append("\": {");
@@ -761,7 +761,7 @@ public class ConstraintsToJson {
 						.append(Double.valueOf(modelDetailsList2.get(i).get("9")).intValue()).append(", \"layout\": ")
 						.append(Double.valueOf(modelDetailsList2.get(i).get("10")).intValue()).append(", \"KVA\": ")
 						.append(Double.valueOf(modelDetailsList2.get(i).get("2")).intValue()).append(", \"runtime\": ")
-						.append(modelDetailsList2.get(i).get("11")).append(", \"pwrFactor\": ").append("1")
+						.append(modelDetailsList2.get(i).get("11")).append(", \"pwrFactor\": ").append(pwrFactor)
 						.append(", \"familyForReport\": \"").append(modelDetailsList2.get(i).get("3"))
 						.append("\", \"upsDescription\": \"").append(modelDetailsList2.get(i).get("4")).append("\"");
 				if (i == (modelDetailsList2.size() - 1)) {
@@ -773,6 +773,7 @@ public class ConstraintsToJson {
 			writeUp.append("}, ");
 			writeUp.append("\"EASY UPS\" : {");
 			for (int i = 0; i < modelDetailsList3.size(); i++) {
+				Double pwrFactor = Double.valueOf(modelDetailsList3.get(i).get("1")) / Double.valueOf(modelDetailsList3.get(i).get("2")); // pwrFactor = KW/KVA
 				writeUp.append("\"");
 				writeUp.append(modelDetailsList3.get(i).get("5"));
 				writeUp.append("\": {");
@@ -783,7 +784,7 @@ public class ConstraintsToJson {
 						.append(Double.valueOf(modelDetailsList3.get(i).get("9")).intValue()).append(", \"layout\": ")
 						.append(Double.valueOf(modelDetailsList3.get(i).get("10")).intValue()).append(", \"KVA\": ")
 						.append(Double.valueOf(modelDetailsList3.get(i).get("2")).intValue()).append(", \"runtime\": ")
-						.append(modelDetailsList3.get(i).get("11")).append(", \"pwrFactor\": ").append("1")
+						.append(modelDetailsList3.get(i).get("11")).append(", \"pwrFactor\": ").append(pwrFactor)
 						.append(", \"familyForReport\": \"").append("EASY UPS").append("\", \"upsDescription\": \"")
 						.append(modelDetailsList3.get(i).get("4")).append("\"");
 				if (i == (modelDetailsList3.size() - 1)) {
