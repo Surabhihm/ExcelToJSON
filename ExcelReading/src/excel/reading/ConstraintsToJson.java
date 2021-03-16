@@ -17,7 +17,6 @@ import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.util.CellAddress;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -160,41 +159,81 @@ public class ConstraintsToJson {
 				String coolingID = getCellValue(row.getCell(0)).toString();
 				Double coolinglength = 0.0;
 				String CoolingTypeValue = "";
+				String CoolingTypeValueID = "";
 
 				if (coolingType.contains("INROW") && coolingType.contains("CW")) {
 					coolinglength = Double.valueOf(getCellValue(row.getCell(3)).toString());
-					CoolingTypeValue = "Inrow CW " + coolinglength + "mm-" + coolingID;
+					CoolingTypeValue = "InRow CW " + coolinglength + "mm-" + coolingID;
+					if(coolingID.equals("ACRC602P") || coolingID.equals("ACRD301P"))
+					{
+						CoolingTypeValueID = "InRow"+Integer.valueOf((int) (coolinglength/100)) + "PCW";
+					}
+					else
+					{
+					CoolingTypeValueID = "InRow"+Integer.valueOf((int) (coolinglength/100)) + "CW";
+					}
 				} else if (coolingType.contains("INROW") && coolingType.contains("DX")) {
 					coolinglength = Double.valueOf(getCellValue(row.getCell(3)).toString());
-					CoolingTypeValue = "Inrow DX " + coolinglength + "mm-" + coolingID;
+					CoolingTypeValue = "InRow DX " + coolinglength + "mm-" + coolingID;
+					if(coolingID.equals("ACRC602P") || coolingID.equals("ACRD301P"))
+					{
+						CoolingTypeValueID = "INROW"+Integer.valueOf((int) (coolinglength/100)) + "PDX";
+					}
+					else if(coolingID.equals("ACRD602P"))
+					{
+						CoolingTypeValueID = "InRow" + "9DX";
+					}
+					else 
+					{
+						CoolingTypeValueID = "INROW"+Integer.valueOf((int) (coolinglength/100)) + "DX";
+					}
+				
 				} else if (coolingType.contains("CRAC") && coolingType.contains("DX")) {
-					CoolingTypeValue = "CRAC DX " + coolingID;
+					CoolingTypeValue = "CRAC DX-" + coolingID;
+					CoolingTypeValueID = "CRAC1DX";
 				} else if (coolingType.contains("CRAC") && coolingType.contains("CW")) {
-					CoolingTypeValue = "CRAC CW " + coolingID;
+					CoolingTypeValue = "CRAC CW-" + coolingID;
+					CoolingTypeValueID = "CRAC1CW";
 				} else if (coolingType.contains("CRAH") && coolingType.contains("CW")) {
 					CoolingTypeValue = "CRAH CW-" + coolingID;
+					CoolingTypeValueID = "CRAH1CW";
 				} else if (coolingType.contains("CRAH") && coolingType.contains("DX")) {
 					CoolingTypeValue = "CRAH DX-" + coolingID;
+					CoolingTypeValueID = "CRAH1DX";
 				} else if (coolingType.contains("WALLMOUNT")) {
-					CoolingTypeValue = "Wall Mounted Down Flow" + coolingID;
+					CoolingTypeValue = "Wall Mounted Down Flow-" + coolingID;
+					CoolingTypeValueID = "WALLMOUNT1";
 				} else if (coolingType.contains("UNISPLIT")) {
-					CoolingTypeValue = "Unisplit DX " + coolingID;
+					CoolingTypeValue = "Unisplit DX-" + coolingID;
+					CoolingTypeValueID = "UNISPLIT";
 				}
 
 				if (!CoolingTypeValue.equals("")) {
 					coolingTypesList.add(new String(CoolingTypeValue));
-					coolingIDList.add(coolingID);
+					coolingIDList.add(CoolingTypeValueID);
 				}
 
-				for (int j = 0; j < enclosureCoolingStrctureList.size(); j++) {
+				
+				for(int j = 0 ; j < enclosureCoolingStrctureList.size() ; j++)
+				{
+					if(!CoolingTypeValue.equals("")) {
+
 					List<CoolingDetails> contList = enclosureCoolingStrctureList.get(j).getCoolingDetails();
 					CoolingDetails coolingDetails = new CoolingDetails();
-					coolingDetails.setCoolingID(coolingID);
+					coolingDetails.setCoolingID(CoolingTypeValueID);
 					coolingDetails.setCoolingType(new String(CoolingTypeValue));
 					coolingDetails.setType("");
-					Double itLoad = Double.valueOf(getCellValue(row.getCell(5 + j)).toString());
+
+					if(enclosureCoolingStrctureList.get(j).getContainerType().equals("40' ISO"))
+					{
+						coolingDetails.setType("_ETO");
+					}
+					
+					Double itLoad = Double.valueOf(getCellValue(row.getCell(5+j)).toString());
 					coolingDetails.setItLoad(itLoad);
 					contList.add(coolingDetails);
+					}
+					
 
 				}
 
@@ -312,7 +351,7 @@ public class ConstraintsToJson {
 				CoolingStructureMap coolingStructureMap = coolonMapList.get(k);
 				String coolingType = coolingStructureMap.getCoolingType();
 				writeUpRack.append("{ \"coolingType\" :\"").append(coolingType).append("\",")
-						.append("\"StructureDetails \" : [");
+						.append("\"structureDetails \" : [");
 
 				for (int m = 0; m < coolingStructureMap.getStructureDetailsList().size(); m++)
 
@@ -325,7 +364,8 @@ public class ConstraintsToJson {
 							.append(" \"value\" : ").append(structureDetails.getValue()).append(" ,")
 							.append(" \"structureType\" : \"").append(structureDetails.getStructureType())
 							.append("\" ,").append(" \"structureValue\" : ")
-							.append(structureDetails.getStructureValue()).append(" ,").append(" \"dehumidifier\" : ")
+							.append(structureDetails.getStructureValue()).append(" ,").append(" \"itLoadValue\" : ")
+							.append(0).append(",").append(" \"dehumidifier\" : ")
 							.append(structureDetails.getDehumidifier()).append(" ,")
 							.append(" \"minimumServiceLength\" : ").append(structureDetails.getMinimumServiceLength())
 							.append(" ,").append(" \"electricalPanel\" : ")
@@ -365,7 +405,7 @@ public class ConstraintsToJson {
 						.append("\",");
 				writeUpEnclosureCooling.append("\"Id\": \"").append(coolDetailList.get(n).getCoolingID()).append("\",");
 				writeUpEnclosureCooling.append("\"type\": \"").append(coolDetailList.get(n).getType()).append("\",");
-				writeUpEnclosureCooling.append("\"itLoad\": \"").append(coolDetailList.get(n).getItLoad()).append("\"");
+				writeUpEnclosureCooling.append("\"itLoad\": ").append(coolDetailList.get(n).getItLoad());
 				writeUpEnclosureCooling.append("},");
 			}
 			writeUpEnclosureCooling.append("]");
@@ -610,8 +650,8 @@ public class ConstraintsToJson {
 				ModelDetiails pduModelkDetails = new ModelDetiails();
 
 				Cell cell0 = row1.getCell(0);
-				Cell cell1 = row1.getCell(1);
-				Cell cell2 = row1.getCell(2);
+				Cell cell1 = row1.getCell(2);
+				Cell cell2 = row1.getCell(3);
 				pduModelkDetails.modelType = getCellValue(cell0).toString();
 				pduModelkDetails.modelNumber = getCellValue(cell1).toString();
 				pduModelkDetails.modelDescription = getCellValue(cell2).toString();
