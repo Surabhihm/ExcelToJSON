@@ -605,9 +605,9 @@ public class ConstraintsToJson {
 				rackDetails.height = Double.valueOf(getCellValue(cell1).toString());
 				rackDetails.width = Double.valueOf(getCellValue(cell2).toString());
 				rackDetails.depth = Double.valueOf(getCellValue(cell3).toString());
-				value.Inrow_Container = Double.valueOf(getCellValue(cell4).toString());
-				value.Inrow_Module = Double.valueOf(getCellValue(cell5).toString());
-				value.Overhead_Container = Double.valueOf(getCellValue(cell6).toString());
+				value.Inrow_Container = Double.valueOf(getCellValue(cell4).toString());				
+				value.Overhead_Container = Double.valueOf(getCellValue(cell5).toString());
+				value.Inrow_Module = Double.valueOf(getCellValue(cell6).toString());
 				value.Overhead_Module = Double.valueOf(getCellValue(cell7).toString());
 				rackDetails.value = value;
 
